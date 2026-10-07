@@ -46,10 +46,6 @@ Ringkasan CRUD per modul:
 | Catatan Pribadi | Create, Read, Update, Delete |
 | Trending, Analytics, Mood Map | Read |
 
-Aplikasi awalnya berupa satu file HTML dengan Firebase Firestore + Supabase (layanan cloud). Untuk tugas ini
-arsitekturnya dipindahkan ke **3 layanan yang berjalan di container**, sehingga database ikut ter-container
-dan aplikasi bisa dijalankan siapa saja dengan satu perintah. Fitur **Galeri** dan **Translator** (termasuk
-Anime Voice TTS yang menyatu dengannya) sudah dihapus dari aplikasi.
 
 ## Arsitektur
 
