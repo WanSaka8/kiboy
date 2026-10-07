@@ -1,15 +1,13 @@
-# 💭 Keluh Kesah — Aplikasi Web Multi-Container (Docker)
+# 💭 Keluh Kesah — Aplikasi Web Multi-Container 
 
 Tugas Kelompok-1 MID DevOps: aplikasi web dengan fitur CRUD dan database yang berjalan penuh di dalam container.
 
-**Nama tim**: _isi_
+**Nama tim**: _Kiboy_
 
 **List Anggota**:
-1. _isi_ — _NIM_
-2. _isi_ — _NIM_
-3. _isi_ — _NIM_
-4. _isi_ — _NIM_
-5. _isi_ — _NIM_
+1. _Wan Saka Nasa_ — _231111488_
+2. _Joni fernando.s_ — _231111598_
+3. _Percaya Mendrofa_ — _231110553_
 
 **Topik project**: Website Keluh Kesah untuk Mendukung Ruang Berbagi Cerita dan Pencatatan Pribadi Secara Anonim
 
@@ -164,8 +162,7 @@ Endpoint bertanda 🔒 hanya bisa diedit/dihapus oleh pemiliknya — pengguna la
 
 ## Perubahan dari aplikasi awal (Firebase + Supabase)
 
-- Fitur **Galeri** dan **Translator** (termasuk Anime Voice TTS) dihapus sepenuhnya (HTML, CSS, JS).
-- Firestore & Supabase diganti backend Express + **MySQL**; frontend memakai `fetch()` ke `/api/...`.
+- Menggunakan backend Express + **MySQL**; frontend memakai `fetch()` ke `/api/...`.
 - Password tunggal (`405090`, lalu `APP_PASSWORD`) diganti **akun per-pengguna**: daftar/login dengan username+password (di-hash bcrypt), sesi memakai token JWT.
 - **Kepemilikan data**: tiap cerita, catatan kalender, dan catatan pribadi tercatat pemiliknya (`user_id` ber-`FOREIGN KEY` ke tabel `users`). Hanya pemilik yang bisa edit/hapus — tombol Edit/Hapus otomatis hilang di UI untuk pengguna lain, dan backend tetap menolak (403) kalau dicoba lewat API langsung.
 - Perbaikan bug: **Catatan Pribadi** sebelumnya tidak difilter per pengguna sama sekali — siapapun yang login bisa melihat dan mengedit punya siapa saja. Sekarang benar-benar privat per akun.
@@ -181,9 +178,9 @@ Endpoint bertanda 🔒 hanya bisa diedit/dihapus oleh pemiliknya — pengguna la
 
 ## Link
 
-- GitHub: _isi_
+- GitHub: _https://github.com/WanSaka8/kiboy_
 - Video dokumentasi: _isi_
-- Docker Hub (opsional): _isi_
+- Docker Hub (opsional): _https://hub.docker.com/repository/docker/narasandrone/izinkompe_
 
 ## Opsional: push image ke Docker Hub
 
@@ -197,6 +194,5 @@ docker compose push backend frontend
 ## Catatan keamanan
 
 - Jangan commit file `.env` (sudah ada di `.gitignore`).
-- Kunci Firebase/Supabase dan password lama pernah tertulis di HTML. Jika repo lama pernah publik, ganti (rotate) kuncinya di konsol masing-masing.
 - Password pengguna disimpan sebagai hash (`bcrypt`), bukan teks asli — bahkan admin database tidak bisa melihat password asli pengguna.
 - Akun demo bawaan (`demo` / `demo1234`) hanya untuk keperluan uji coba/presentasi. Ganti atau hapus sebelum dipakai di luar lingkungan tugas.
