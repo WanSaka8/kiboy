@@ -1,0 +1,157 @@
+# Pipeline CI/CD aplikasi Keluh Kesah
+#   1. CI       : build image, jalankan 4 container, smoke test   (GitHub runner)
+#   2. Delivery : push image yang lulus uji ke Docker Hub          (GitHub runner)
+#   3. Deploy   : tarik image baru & jalankan di laptop anggota    (self-hosted runner)
+name: CI/CD Keluh Kesah
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME || 'narasandrone' }}
+  IMAGE_REPO: izinkompe
+
+jobs:
+  build-test:
+    name: "1. CI - Build & Test"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Ambil source code
+        uses: actions/checkout@v4
+
+      - name: Siapkan file .env untuk pengujian
+        run: |
+          cp .env.example .env
+          sed -i "s/^DOCKERHUB_USER=.*/DOCKERHUB_USER=${DOCKERHUB_USER}/" .env
+
+      - name: Validasi docker-compose.yml
+        run: docker compose config --quiet
+
+      - name: Build image backend dan frontend
+        run: docker compose build
+
+      - name: Jalankan semua container dan tunggu sampai healthy
+        run: docker compose up -d --wait --wait-timeout 180
+
+      - name: Tampilkan status container
+        run: docker compose ps
+
+      - name: Smoke test aplikasi
+        run: bash scripts/smoke-test.sh http://localhost:8080
+
+      - name: Tampilkan log container jika gagal
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Simpan image yang lulus uji
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          docker save \
+            "${DOCKERHUB_USER}/${IMAGE_REPO}:backend" \
+            "${DOCKERHUB_USER}/${IMAGE_REPO}:frontend" \
+            -o images.tar
+
+      - name: Upload image sebagai artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: images
+          path: images.tar
+          retention-days: 1
+
+      - name: Matikan container pengujian
+        if: always()
+        run: docker compose down -v
+
+  push:
+    name: "2. Delivery - Push ke Docker Hub"
+    needs: build-test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download image dari job CI
+        uses: actions/download-artifact@v4
+        with:
+          name: images
+
+      - name: Muat image
+        run: docker load -i images.tar
+
+      - name: Login ke Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Beri tag versi commit lalu push
+        run: |
+          SHA="${GITHUB_SHA::7}"
+          for svc in backend frontend; do
+            docker tag "${DOCKERHUB_USER}/${IMAGE_REPO}:${svc}" "${DOCKERHUB_USER}/${IMAGE_REPO}:${svc}-${SHA}"
+            docker push "${DOCKERHUB_USER}/${IMAGE_REPO}:${svc}"
+            docker push "${DOCKERHUB_USER}/${IMAGE_REPO}:${svc}-${SHA}"
+          done
+
+  deploy:
+    name: "3. Deploy - Laptop (self-hosted)"
+    needs: push
+    runs-on: [self-hosted, keluhkesah]
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: http://localhost:8080
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Ambil source code
+        uses: actions/checkout@v4
+
+      - name: Tulis .env dari GitHub Secrets
+        env:
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          {
+            echo "MYSQL_DATABASE=keluhkesah"
+            echo "MYSQL_USER=keluh"
+            echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+            echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+            echo "JWT_SECRET=${JWT_SECRET}"
+            echo "WEB_PORT=8080"
+            echo "ADMINER_PORT=8081"
+            echo "DOCKERHUB_USER=${DOCKERHUB_USER}"
+          } > .env
+
+      - name: Tarik image terbaru dari Docker Hub
+        run: docker compose pull
+
+      - name: Jalankan ulang container dengan image baru
+        run: docker compose up -d --no-build --remove-orphans --wait --wait-timeout 180
+
+      - name: Tampilkan status container
+        run: docker compose ps
+
+      - name: Smoke test aplikasi di laptop
+        run: bash scripts/smoke-test.sh http://localhost:8080
+
+      - name: Tampilkan log container jika gagal
+        if: failure()
+        run: docker compose logs --no-color --tail 100
+
+      - name: Hapus image lama yang tidak terpakai
+        if: success()
+        run: docker image prune -f

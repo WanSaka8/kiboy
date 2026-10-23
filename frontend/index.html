@@ -1,0 +1,4150 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keluh Kesah</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+      background-size: 300% 300%;
+      animation: gradientShift 8s ease infinite;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Weather Widget */
+    .weather-widget {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(6px);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsif untuk HP */
+    @media (max-width: 768px) {
+      .weather-widget {
+        top: 12px;
+        right: 12px;
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+      padding: 0 1rem;
+      flex-wrap: nowrap;
+    }
+
+    nav button {
+      flex: 1;
+      padding: 1rem 0.5rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      text-align: center;
+    }
+
+    nav button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    nav button.active {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .page {
+      display: none;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .input-group {
+      position: relative;
+      flex: 1;
+    }
+
+    input,
+    textarea,
+    select {
+      padding: 1rem;
+      border-radius: 15px;
+      border: 2px solid #e1e8ed;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+      width: 100%;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      box-shadow: 0 0 20px rgba(78, 205, 196, 0.2);
+      transform: translateY(-2px);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .mood-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mood-option {
+      padding: 0.5rem 1rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 25px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .mood-option:hover {
+      transform: scale(1.05);
+    }
+
+    .mood-option.selected {
+      border-color: #4ecdc4;
+      background: #4ecdc4;
+      color: white;
+    }
+
+    /* Category Selector */
+    .category-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .category-option {
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .category-option:hover {
+      transform: scale(1.05);
+    }
+
+    .category-option.selected {
+      border-color: #ff6b6b;
+      background: #ff6b6b;
+      color: white;
+    }
+
+    /* Voice Recording */
+    .voice-recorder {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      margin: 1rem 0;
+    }
+
+    .voice-btn {
+      padding: 0.8rem;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .voice-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .voice-btn.recording {
+      animation: pulse 1s infinite;
+      background: linear-gradient(45deg, #ff4757, #ff3838);
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Anonymous Toggle */
+    .anonymous-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 25px;
+      background: #e1e8ed;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .switch.active {
+      background: #4ecdc4;
+    }
+
+    .switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 21px;
+      height: 21px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .switch.active::after {
+      left: 27px;
+    }
+
+    /* Mood Predictor */
+    .mood-predictor {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 15px;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .predicted-mood {
+      font-size: 2rem;
+      margin: 0.5rem 0;
+    }
+
+    button.submit {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    button.submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+    }
+
+    .search-container {
+      margin-bottom: 2rem;
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1rem;
+      border-radius: 15px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Advanced Filters */
+    .filter-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1rem;
+      border-radius: 15px;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .filter-group {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      justify-items: center;
+    }
+
+    .filter-btn {
+      padding: 0.4rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      width: 45px;
+      height: 45px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .filter-btn.active {
+      border-color: #4ecdc4;
+      background: #4ecdc4;
+      color: white;
+    }
+
+    /* Time Filter */
+    .time-filter {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .time-btn {
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 15px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .time-btn.active {
+      border-color: #45b7d1;
+      background: #45b7d1;
+      color: white;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    li::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+      background-size: 300% 300%;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .note-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .author-name {
+      font-weight: 700;
+      color: #2d3748;
+      font-size: 1.1rem;
+    }
+
+    .mood-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .category-badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.8);
+      color: #666;
+      margin-left: 0.5rem;
+    }
+
+    .mood-happy {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .mood-sad {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .mood-angry {
+      background: #fecaca;
+      color: #dc2626;
+    }
+
+    .mood-excited {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .mood-confused {
+      background: #f3e8ff;
+      color: #7c3aed;
+    }
+
+    .mood-grateful {
+      background: #fdf2f8;
+      color: #db2777;
+    }
+
+    .note-text {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      word-wrap: break-word;
+    }
+
+    /* Comments Section */
+    .comments-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e1e8ed;
+    }
+
+    .comments-toggle {
+      cursor: pointer;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .comments-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+
+    .comment {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 0.8rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .comment-input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    .comment-btn {
+      padding: 0.5rem 1rem;
+      background: #4ecdc4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .note-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .note-footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .timestamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: #718096;
+      font-size: 0.85rem;
+      background: rgba(113, 128, 150, 0.1);
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-weight: 500;
+    }
+
+    .reactions-section {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .reaction-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .reaction-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .reaction-btn.active {
+      border-color: #4ecdc4;
+      background: #4ecdc4;
+      color: white;
+    }
+
+    .actions-section {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .action-btn {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .delete-btn {
+      background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+      color: white;
+    }
+
+    .edit-btn {
+      background: linear-gradient(45deg, #45b7d1, #64b5f6);
+      color: white;
+    }
+
+    .share-btn {
+      background: linear-gradient(45deg, #96ceb4, #81c784);
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Mood Map */
+    .mood-map {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .mood-day {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mood-day:hover {
+      transform: scale(1.1);
+    }
+
+    /* Daily Challenge */
+    .daily-challenge {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .challenge-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .challenge-description {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+      color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform: translateX(400px);
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.error {
+      background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .character-count {
+      text-align: right;
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .character-count.warning {
+      color: #ff6b6b;
+    }
+
+    /* Dark Mode - Much brighter text contrast */
+    body.dark-mode {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #ffffff;
+    }
+
+    .dark-mode .form-container,
+    .dark-mode .filter-section,
+    .dark-mode .mood-map,
+    .dark-mode li {
+      background: rgba(44, 62, 80, 0.95);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode .search-box {
+      background: rgba(44, 62, 80, 0.95);
+      color: #ffffff;
+    }
+
+    .dark-mode input,
+    .dark-mode textarea,
+    .dark-mode select {
+      background: rgba(52, 73, 94, 0.9);
+      color: #ffffff;
+      border-color: #5a6c7d;
+    }
+
+    .dark-mode input::placeholder,
+    .dark-mode textarea::placeholder {
+      color: #e0e0e0;
+    }
+
+    .dark-mode .author-name {
+      color: #ffffff;
+    }
+
+    .dark-mode .note-text {
+      color: #f0f0f0;
+    }
+
+    .dark-mode .timestamp {
+      color: #e0e0e0;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .dark-mode .comments-toggle {
+      color: #e0e0e0;
+    }
+
+    .dark-mode .comment {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    /* Fix untuk tanggal komentar di dark mode */
+    .dark-mode .comment div[style*="color: #666"] {
+      color: #e0e0e0 !important;
+    }
+
+    .dark-mode .comment>div {
+      color: #e0e0e0 !important;
+    }
+
+    .dark-mode .comment-input {
+      background: rgba(52, 73, 94, 0.9);
+      color: #ffffff;
+      border-color: #5a6c7d;
+    }
+
+    .dark-mode .modal-content {
+      background: #2c3e50;
+      color: #ffffff;
+    }
+
+    .dark-mode .close-btn {
+      color: #e0e0e0;
+    }
+
+    .dark-mode .character-count {
+      color: #e0e0e0;
+    }
+
+    .dark-mode .mood-option,
+    .dark-mode .category-option,
+    .dark-mode .filter-btn,
+    .dark-mode .time-btn,
+    .dark-mode .reaction-btn {
+      background: rgba(52, 73, 94, 0.9);
+      color: #ffffff;
+      border-color: #5a6c7d;
+    }
+
+    .dark-mode .mood-option:hover,
+    .dark-mode .category-option:hover,
+    .dark-mode .filter-btn:hover,
+    .dark-mode .time-btn:hover,
+    .dark-mode .reaction-btn:hover {
+      background: rgba(72, 93, 114, 0.9);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 0.8rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 999;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      nav {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.8rem;
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+        max-width: 800px;
+      }
+
+
+      nav button {
+        padding: 1rem 0.5rem;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        text-align: center;
+      }
+
+
+      .page {
+        padding: 1rem;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .note-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+
+      .note-footer-top {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .reactions-section {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .weather-widget {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+
+      .theme-toggle {
+        top: 10px;
+        left: 10px;
+      }
+
+      /* Mobile mood map improvements */
+      .mood-grid {
+        gap: 0.3rem;
+      }
+
+      .mood-day {
+        font-size: 0.9rem;
+        min-height: 35px;
+      }
+
+      .mood-map {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      nav {
+        gap: 0.5rem;
+      }
+
+      nav button {
+        font-size: 0.8rem;
+        padding: 0.8rem 0.3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .mood-grid {
+        gap: 0.2rem;
+      }
+
+      .mood-day {
+        font-size: 0.8rem;
+        min-height: 30px;
+      }
+    }
+
+
+    /* --- Styling untuk Grup Tombol Tema --- */
+    .theme-switcher {
+      position: fixed;
+      top: 80px;
+      /* Biar gak numpuk sama weather */
+      left: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
+      padding: 10px;
+      border-radius: 16px;
+      z-index: 1001;
+      /* Lebih tinggi dari tulisan */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Responsif untuk HP */
+    @media (max-width: 768px) {
+      .theme-switcher {
+        top: 70px;
+        left: 8px;
+        gap: 6px;
+        padding: 8px;
+        border-radius: 12px;
+      }
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+    }
+
+
+    .theme-switcher #theme-toggle-main {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 0.7rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-switcher #theme-toggle-main:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .theme-options {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 8px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-options button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 0.6rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .theme-options button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .theme-switcher.show .theme-options {
+      display: flex;
+    }
+
+
+    .theme-switcher button.active {
+      background: linear-gradient(45deg, #ff6ac1, #00c2cb);
+      box-shadow: 0 0 10px rgba(255, 106, 193, 0.7);
+    }
+
+
+    /* --- CSS untuk Mode Wibu --- */
+    body.theme-wibu {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      /* Font opsional untuk nuansa techy */
+    }
+
+    /* Tampilkan kelopak sakura hanya di mode wibu */
+    .theme-wibu .sakura-container {
+      display: block;
+    }
+
+    .theme-wibu header {
+      background: rgba(26, 26, 46, 0.8);
+      border-bottom: 2px solid #ff6ac1;
+      box-shadow: 0 4px 20px rgba(255, 106, 193, 0.2);
+    }
+
+    .theme-wibu header h1 {
+      text-shadow: 0 0 5px #ff6ac1, 0 0 10px #ff6ac1;
+    }
+
+    .theme-wibu nav button {
+      background: transparent;
+      color: #e0e0e0;
+      border: 2px solid #00c2cb;
+    }
+
+    .theme-wibu nav button:hover {
+      background: rgba(0, 194, 203, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 194, 203, 0.3);
+    }
+
+    .theme-wibu nav button.active {
+      background: linear-gradient(45deg, #ff6ac1, #00c2cb);
+      color: white;
+      border-color: transparent;
+      text-shadow: 0 0 5px white;
+    }
+
+    .theme-wibu .form-container,
+    .theme-wibu .filter-section,
+    .theme-wibu .mood-map,
+    .theme-wibu li,
+    .theme-wibu .search-box,
+    .theme-wibu .modal-content {
+      background: rgba(22, 33, 62, 0.85);
+      backdrop-filter: blur(10px);
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 106, 193, 0.3);
+    }
+
+    .theme-wibu input,
+    .theme-wibu textarea,
+    .theme-wibu select {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border-color: #5a6c7d;
+    }
+
+    .theme-wibu input:focus,
+    .theme-wibu textarea:focus,
+    .theme-wibu select:focus {
+      border-color: #ff6ac1;
+      box-shadow: 0 0 15px rgba(255, 106, 193, 0.5);
+    }
+
+    .theme-wibu .mood-option,
+    .theme-wibu .category-option,
+    .theme-wibu .filter-btn,
+    .theme-wibu .time-btn,
+    .theme-wibu .reaction-btn {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border-color: #5a6c7d;
+    }
+
+    .theme-wibu .mood-option.selected,
+    .theme-wibu .category-option.selected,
+    .theme-wibu .filter-btn.active,
+    .theme-wibu .time-btn.active,
+    .theme-wibu .reaction-btn.active {
+      background: #ff6ac1;
+      border-color: #ff6ac1;
+      color: #1a1a2e;
+      font-weight: bold;
+    }
+
+    .theme-wibu button.submit,
+    .theme-wibu .action-btn {
+      background: linear-gradient(45deg, #ff6ac1, #00c2cb);
+    }
+
+    .theme-wibu li::before {
+      background: linear-gradient(90deg, #ff6ac1, #00c2cb, #8e44ad);
+    }
+
+    .theme-wibu .author-name,
+    .theme-wibu .note-text,
+    .theme-wibu .timestamp {
+      color: #f0f0f0;
+    }
+
+    /* --- CSS Animasi Kelopak Sakura (Sakura) --- */
+    .sakura-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 998;
+      display: none;
+      /* Sembunyikan secara default */
+    }
+
+    .sakura {
+      position: absolute;
+      top: -10%;
+      width: 20px;
+      height: 20px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%23ffb6c1' d='M256 32c24 0 45 11 60 29 15-18 36-29 60-29 44 0 80 36 80 80 0 37-25 68-61 77 10 11 15 26 15 41 0 35-29 64-64 64-15 0-29-5-40-14-11 9-25 14-40 14s-29-5-40-14c-11 9-25 14-40 14-35 0-64-29-64-64 0-15 5-30 15-41-36-9-61-40-61-77 0-44 36-80 80-80 24 0 45 11 60 29 15-18 36-29 60-29z'/></svg>");
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: fall linear infinite;
+      opacity: 0.85;
+    }
+
+    /* 🌈 Rainbow Mode */
+    body.theme-rainbow {
+      background: linear-gradient(270deg, #ff6b6b, #fddb92, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff9ff3);
+      background-size: 1400% 1400%;
+      animation: rainbowBackground 15s ease infinite;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Animasi gradasi pelangi bergerak */
+    @keyframes rainbowBackground {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Card & container di mode rainbow */
+    .theme-rainbow .form-container,
+    .theme-rainbow .filter-section,
+    .theme-rainbow .mood-map,
+    .theme-rainbow li,
+    .theme-rainbow .search-box,
+    .theme-rainbow .modal-content {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Tombol di mode rainbow */
+    .theme-rainbow button,
+    .theme-rainbow .action-btn,
+    .theme-rainbow .submit {
+      background: linear-gradient(90deg, #ff6b6b, #fddb92, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff9ff3);
+      background-size: 500% 500%;
+      animation: rainbowButton 5s linear infinite;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    @keyframes rainbowButton {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Hover efek tombol di mode rainbow */
+    .theme-rainbow button:hover,
+    .theme-rainbow .submit:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Efek glow pada teks */
+    .theme-rainbow h1,
+    .theme-rainbow h2,
+    .theme-rainbow .author-name {
+      text-shadow: 0 0 5px #fff, 0 0 10px #ff6b6b, 0 0 15px #4ecdc4, 0 0 20px #ff9ff3;
+    }
+
+    .theme-rainbow input:focus,
+    .theme-rainbow textarea:focus,
+    .theme-rainbow select:focus {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 18px rgba(255, 0, 255, 0.7);
+    }
+
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(105vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    /* Warna default tombol Download & Hapus */
+    button.download {
+      background-color: #3b82f6;
+      /* biru */
+    }
+
+    button.download:hover {
+      background-color: #2563eb;
+    }
+
+    button.hapus {
+      background-color: #ef4444;
+      /* merah */
+    }
+
+    button.hapus:hover {
+      background-color: #dc2626;
+    }
+
+    /* Mode Light */
+    .theme-light button {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    /* Mode Dark */
+    .theme-dark button {
+      background-color: #1e40af;
+      color: white;
+    }
+
+    /* Mode Wibu */
+    .theme-wibu button {
+      background-color: #ec4899;
+      color: white;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .calendar-header h3 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 1rem;
+    }
+
+    .calendar-day {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      min-height: 80px;
+      padding: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .calendar-day:hover {
+      background: #f1f5f9;
+    }
+
+    .note-count {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: #4ecdc4;
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="passwordModal" class="modal active">
+    <div class="modal-content">
+      <h3 id="authTitle">🔑 Masuk ke Keluh Kesah</h3>
+      <input type="text" id="authUsername" placeholder="Username..." autocomplete="username"
+        style="width:100%;margin:1rem 0 0.5rem;padding:0.7rem;border-radius:8px;border:1px solid #ccc;">
+      <input type="password" id="authPassword" placeholder="Password..." autocomplete="current-password"
+        style="width:100%;margin:0 0 1rem;padding:0.7rem;border-radius:8px;border:1px solid #ccc;">
+      <button id="submitAuth" class="submit">🚀 Masuk</button>
+      <p id="authError" style="color:red;display:none;margin-top:0.5rem;"></p>
+      <p style="margin-top:0.8rem;font-size:0.9rem;">
+        <span id="authToggleText">Belum punya akun?</span>
+        <a href="#" id="authToggleLink">Daftar di sini</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="sakura-container"></div>
+  <!-- Theme Toggle -->
+  <div class="theme-switcher">
+    <button id="theme-toggle-main" title="Ganti Mode">🎨</button>
+    <div class="theme-options" id="theme-options">
+      <button id="theme-light" title="Mode Terang">☀️</button>
+      <button id="theme-dark" title="Mode Gelap">🌙</button>
+      <button id="theme-wibu" title="Mode Wibu">🌸</button>
+      <button id="theme-rainbow" title="Mode Rainbow">🌈</button>
+    </div>
+  </div>
+
+
+  <header>
+    <!-- Weather Widget -->
+    <div class="weather-widget" id="weatherWidget">
+      <span>🌤️</span>
+      <span>Loading...</span>
+    </div>
+
+    <h1>💭 Keluh Kesah</h1>
+    <p>Tempat berbagi cerita dan keluh kesah</p>
+    <div class="stats">
+      <div class="stat-item">📝 <span id="totalPosts">0</span> cerita</div>
+      <div class="stat-item">❤️ <span id="totalLikes">0</span> likes</div>
+      <div class="stat-item">👥 <span id="activeUsers">0</span> kontributor</div>
+      <div class="stat-item">🔥 <span id="dailyStreak">0</span> hari berturut</div>
+    </div>
+  </header>
+
+  <nav>
+    <button id="btn-tulis" class="active">✍️ Tulis Cerita</button>
+    <button id="btn-daftar">📋 Daftar Cerita</button>
+    <button id="btn-trending">🔥 Trending</button>
+    <button id="btn-analytics">📊 Analytics</button>
+    <button id="btn-mood-map">📅 Mood Map</button>
+    <button id="btn-daily-notes">📅 Kalender Catatan</button>
+    <button id="btn-private-notes">📝 Catatan Pribadi</button>
+    <button id="btn-nightcore">🎵 Nightcore</button>
+
+
+  </nav>
+
+  <!-- Daily Challenge -->
+  <div class="daily-challenge">
+    <div class="challenge-title">🎯 Tantangan Hari Ini</div>
+    <div class="challenge-description" id="dailyChallenge">
+      Ceritakan satu hal kecil yang membuat kamu tersenyum hari ini!
+    </div>
+  </div>
+
+  <!-- Halaman Tulis -->
+  <div id="page-tulis" class="page">
+    <div class="form-container">
+      <form id="noteForm">
+        <div class="form-row">
+          <div class="input-group">
+            <input type="text" id="nama" placeholder="Siapa nama kamu?" required>
+          </div>
+          <div class="anonymous-toggle">
+            <span>Anonim</span>
+            <div class="switch" id="anonymousSwitch"></div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Kategori:</label>
+          <div class="category-selector">
+            <div class="category-option" data-category="personal">👤 Personal</div>
+            <div class="category-option" data-category="work">💼 Kerja</div>
+            <div class="category-option" data-category="family">👨‍👩‍👧‍👦 Keluarga</div>
+            <div class="category-option" data-category="love">💕 Cinta</div>
+            <div class="category-option" data-category="health">🏥 Kesehatan</div>
+            <div class="category-option" data-category="education">🎓 Pendidikan</div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Mood saat ini:</label>
+          <div class="mood-selector">
+            <div class="mood-option" data-mood="happy">😊 Senang</div>
+            <div class="mood-option" data-mood="sad">😢 Sedih</div>
+            <div class="mood-option" data-mood="angry">😠 Marah</div>
+            <div class="mood-option" data-mood="excited">🤩 Antusias</div>
+            <div class="mood-option" data-mood="confused">😕 Bingung</div>
+            <div class="mood-option" data-mood="grateful">🙏 Bersyukur</div>
+          </div>
+        </div>
+
+        <!-- Voice Recorder -->
+        <div class="voice-recorder">
+          <button type="button" class="voice-btn" id="voiceBtn">🎙️</button>
+          <div id="voiceStatus">Klik untuk mulai merekam suara (opsional)</div>
+          <div id="voiceTime"></div>
+        </div>
+
+        <!-- Mood Predictor -->
+        <div class="mood-predictor">
+          <div>🤖 AI Mood Predictor</div>
+          <div class="predicted-mood" id="predictedMood">🤔</div>
+          <div id="moodPrediction">Tulis sesuatu untuk memprediksi mood...</div>
+        </div>
+
+        <div class="input-group">
+          <textarea id="catatan" placeholder="Ceritakan keluh kesah atau pengalaman kamu di sini..." required
+            maxlength="500"></textarea>
+          <div class="character-count">
+            <span id="charCount">0</span>/500 karakter
+          </div>
+        </div>
+
+        <button type="submit" class="submit">🚀 Kirim Cerita</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Halaman Daftar -->
+  <div id="page-daftar" class="page">
+    <div class="search-container">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Cari cerita..."
+          style="border: none; background: transparent; flex: 1;">
+        <select id="sortSelect" style="border: none; background: transparent;">
+          <option value="newest">Terbaru</option>
+          <option value="oldest">Terlama</option>
+          <option value="popular">Terpopuler</option>
+          <option value="random">Random</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-row">
+        <span style="font-weight: 600;">Filter mood:</span>
+        <div class="filter-group">
+          <div class="filter-btn active" data-filter="all">✅</div>
+          <div class="filter-btn" data-filter="happy">😊</div>
+          <div class="filter-btn" data-filter="sad">😢</div>
+          <div class="filter-btn" data-filter="angry">😠</div>
+          <div class="filter-btn" data-filter="excited">🤩</div>
+          <div class="filter-btn" data-filter="confused">😕</div>
+          <div class="filter-btn" data-filter="grateful">🙏</div>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span style="font-weight: 600;">Filter waktu:</span>
+        <div class="time-filter">
+          <div class="time-btn active" data-time="all">Semua</div>
+          <div class="time-btn" data-time="today">Hari ini</div>
+          <div class="time-btn" data-time="week">Minggu ini</div>
+          <div class="time-btn" data-time="month">Bulan ini</div>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span style="font-weight: 600;">Filter kategori:</span>
+        <div class="time-filter">
+          <div class="time-btn active" data-category-filter="all">Semua</div>
+          <div class="time-btn" data-category-filter="personal">Personal</div>
+          <div class="time-btn" data-category-filter="work">Kerja</div>
+          <div class="time-btn" data-category-filter="family">Keluarga</div>
+          <div class="time-btn" data-category-filter="love">Cinta</div>
+          <div class="time-btn" data-category-filter="health">Kesehatan</div>
+        </div>
+      </div>
+    </div>
+
+    <ul id="notesList"></ul>
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <h3>📝 Belum ada cerita</h3>
+      <p>Jadilah yang pertama membagikan keluh kesah atau cerita!</p>
+    </div>
+  </div>
+
+  <!-- Halaman Trending -->
+  <div id="page-trending" class="page">
+    <div class="trending-section">
+      <div class="trending-title">🔥 Trending Topics</div>
+      <div class="trending-tags" id="trendingTags">
+        <div class="trending-tag">#keluhkesah</div>
+        <div class="trending-tag">#ceritasedih</div>
+        <div class="trending-tag">#motivasi</div>
+        <div class="trending-tag">#pengalaman</div>
+        <div class="trending-tag">#keluarga</div>
+        <div class="trending-tag">#kerja</div>
+      </div>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">⭐ Cerita Terpopuler Minggu Ini</div>
+      <ul id="popularNotes"></ul>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">🎯 Word Cloud</div>
+      <div id="wordCloud" style="text-align: center; padding: 2rem; font-family: serif;">
+        <span style="font-size: 2rem; color: #ff6b6b;">sedih</span>
+        <span style="font-size: 1.5rem; color: #4ecdc4;">bahagia</span>
+        <span style="font-size: 1.8rem; color: #45b7d1;">kerja</span>
+        <span style="font-size: 1.3rem; color: #96ceb4;">keluarga</span>
+        <span style="font-size: 2.2rem; color: #ffeaa7;">cinta</span>
+        <span style="font-size: 1.6rem; color: #ff7675;">stress</span>
+        <span style="font-size: 1.4rem; color: #74b9ff;">motivasi</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Halaman Analytics -->
+  <div id="page-analytics" class="page">
+    <div class="trending-section">
+      <div class="trending-title">📊 Analytics Dashboard</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div
+          style="background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="totalPostsAnalytics">0</div>
+          <div>Total Cerita</div>
+        </div>
+        <div
+          style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="totalReactionsAnalytics">0</div>
+          <div>Total Reaksi</div>
+        </div>
+        <div
+          style="background: linear-gradient(45deg, #96ceb4, #81c784); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="avgReactionsAnalytics">0</div>
+          <div>Rata-rata Reaksi</div>
+        </div>
+        <div
+          style="background: linear-gradient(45deg, #ffeaa7, #fdcb6e); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="topMoodAnalytics">😊</div>
+          <div>Mood Terpopuler</div>
+        </div>
+        <div
+          style="background: linear-gradient(45deg, #a29bfe, #6c5ce7); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="activeHoursAnalytics">18:00</div>
+          <div>Jam Teraktif</div>
+        </div>
+        <div
+          style="background: linear-gradient(45deg, #fd79a8, #e84393); color: white; padding: 1.5rem; border-radius: 15px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: bold;" id="longestStreakAnalytics">0</div>
+          <div>Streak Terpanjang</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">📈 Mood Distribution</div>
+      <div id="moodChart" style="display: flex; gap: 1rem; flex-wrap: wrap;"></div>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">📅 Aktivitas Harian</div>
+      <div id="activityChart"
+        style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; margin-top: 1rem;">
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Sen</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Sel</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Rab</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Kam</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Jum</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Sab</div>
+        <div style="text-align: center; font-weight: bold; padding: 0.5rem;">Min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Halaman Mood Map -->
+  <div id="page-mood-map" class="page">
+    <div class="mood-map">
+      <div class="trending-title">📅 Mood Calendar</div>
+      <p style="color: #666; margin-bottom: 1rem;">Klik pada tanggal untuk melihat mood kamu hari itu</p>
+      <div id="moodCalendar" class="mood-grid"></div>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">📊 Mood Statistics</div>
+      <div id="moodStats"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+        <div style="text-align: center; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+          <div style="font-size: 2rem;">😊</div>
+          <div style="font-weight: bold; margin: 0.5rem 0;">Mood Dominan</div>
+          <div style="color: #666;">Senang</div>
+        </div>
+        <div style="text-align: center; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+          <div style="font-size: 2rem;">📈</div>
+          <div style="font-weight: bold; margin: 0.5rem 0;">Trend</div>
+          <div style="color: #666;">Naik</div>
+        </div>
+        <div style="text-align: center; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+          <div style="font-size: 2rem;">🔥</div>
+          <div style="font-weight: bold; margin: 0.5rem 0;">Konsistensi</div>
+          <div style="color: #666;" id="consistencyScore">85%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trending-section">
+      <div class="trending-title">💡 Mood Insights</div>
+      <div id="moodInsights" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div
+          style="padding: 1rem; background: rgba(78, 205, 196, 0.1); border-left: 4px solid #4ecdc4; border-radius: 0 10px 10px 0;">
+          <strong>💡 Insight:</strong> Kamu cenderung lebih bahagia di akhir pekan!
+        </div>
+        <div
+          style="padding: 1rem; background: rgba(255, 107, 107, 0.1); border-left: 4px solid #ff6b6b; border-radius: 0 10px 10px 0;">
+          <strong>⚠️ Perhatian:</strong> Mood turun pada hari Senin, mungkin Monday Blues?
+        </div>
+        <div
+          style="padding: 1rem; background: rgba(150, 206, 180, 0.1); border-left: 4px solid #96ceb4; border-radius: 0 10px 10px 0;">
+          <strong>🎯 Saran:</strong> Coba aktivitas relaksasi di hari kerja untuk mood yang lebih baik.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>✏️ Edit Cerita</h3>
+        <button class="close-btn" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="editForm">
+        <div class="input-group">
+          <textarea id="editCatatan" placeholder="Edit cerita..." required maxlength="500"></textarea>
+          <div class="character-count">
+            <span id="editCharCount">0</span>/500 karakter
+          </div>
+        </div>
+        <button type="submit" class="submit">💾 Simpan Perubahan</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Halaman Kalender Catatan -->
+  <div id="page-daily-notes" class="page">
+    <div class="note-calendar">
+      <div class="trending-title">📅 Kalender Catatan</div>
+      <p style="color:#666;margin-bottom:1rem;">Klik tanggal untuk melihat / menambah catatan</p>
+
+      <!-- Header kalender -->
+      <div class="calendar-header">
+        <button id="prevMonth">⟨</button>
+        <h3 id="currentMonth"></h3>
+        <button id="nextMonth">⟩</button>
+      </div>
+
+      <!-- Grid kalender -->
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal Catatan -->
+  <div id="notesModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📝 Catatan Tanggal <span id="modalDate"></span></h3>
+        <button class="close-btn" onclick="closeNotesModal()">&times;</button>
+      </div>
+      <div id="notesListByDate" style="margin-bottom:1rem;"></div>
+      <textarea id="newNoteInput" placeholder="Tambah catatan..."
+        style="width:100%;border-radius:8px;padding:0.5rem;"></textarea>
+      <button onclick="saveNote()" class="submit" style="margin-top:1rem;">💾 Simpan</button>
+    </div>
+  </div>
+  <div id="pn-page" class="page">
+    <div
+      style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); backdrop-filter: blur(20px); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div
+          style="width: 48px; height: 48px; background: linear-gradient(135deg, #06d6a0 0%, #00a884 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 22px; box-shadow: 0 4px 16px rgba(6, 214, 160, 0.3); position: relative; overflow: hidden;">
+          <div
+            style="position: absolute; inset: 0; background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);">
+          </div>
+          ✨
+        </div>
+        <div>
+          <h2 style="color: #f1f5f9; font-weight: 700; font-size: 24px; margin: 0; letter-spacing: -0.5px;">Notes</h2>
+          <p style="color: #64748b; font-size: 13px; margin: 0; font-weight: 400;">Personal notebook</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 4px;">
+        <button id="pn-export-btn"
+          style="background: rgba(100, 116, 139, 0.1); color: #64748b; border: none; cursor: pointer; padding: 12px; border-radius: 12px; font-size: 18px; transition: all 0.3s ease; backdrop-filter: blur(10px);"
+          onmouseover="this.style.background='rgba(100, 116, 139, 0.2)'; this.style.color='#94a3b8'"
+          onmouseout="this.style.background='rgba(100, 116, 139, 0.1)'; this.style.color='#64748b'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+          </svg>
+        </button>
+        <label for="pn-import-input"
+          style="background: rgba(100, 116, 139, 0.1); color: #64748b; cursor: pointer; padding: 12px; border-radius: 12px; font-size: 18px; transition: all 0.3s ease; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;"
+          onmouseover="this.style.background='rgba(100, 116, 139, 0.2)'; this.style.color='#94a3b8'"
+          onmouseout="this.style.background='rgba(100, 116, 139, 0.1)'; this.style.color='#64748b'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+          </svg>
+        </label>
+        <input type="file" id="pn-import-input" accept="application/json" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Search Bar (Top) -->
+    <div
+      style="padding: 16px 24px; background: rgba(15, 20, 25, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(148, 163, 184, 0.05);">
+      <div style="position: relative; max-width: 600px; margin: 0 auto;">
+        <input id="pn-search" placeholder="Search your notes..."
+          style="width: 100%; padding: 14px 20px 14px 48px; border-radius: 24px; border: 1px solid rgba(148, 163, 184, 0.1); background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(20px); color: #f1f5f9; font-size: 15px; outline: none; box-sizing: border-box; transition: all 0.3s ease; font-weight: 400;"
+          onfocus="this.style.background='rgba(30, 41, 59, 0.6)'; this.style.borderColor='rgba(6, 214, 160, 0.3)'; this.style.boxShadow='0 0 0 3px rgba(6, 214, 160, 0.1)'"
+          onblur="this.style.background='rgba(30, 41, 59, 0.4)'; this.style.borderColor='rgba(148, 163, 184, 0.1)'; this.style.boxShadow='none'">
+        <svg style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b;" width="20"
+          height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div
+      style="flex: 1; overflow-y: auto; padding: 20px 24px; background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%); position: relative;">
+      <div
+        style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(6, 214, 160, 0.05) 0%, transparent 40%), radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);">
+      </div>
+      <div id="pn-container"
+        style="display: flex; flex-direction: column; gap: 16px; max-width: 800px; margin: 0 auto; position: relative; z-index: 1;">
+      </div>
+      <p id="pn-empty"
+        style="display: none; text-align: center; color: #64748b; margin-top: 80px; font-size: 18px; opacity: 0.8; font-weight: 400; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+        Belum ada catatan<br>
+        <span style="font-size: 14px; opacity: 0.6;">Mulai tulis catatan pertama kamu</span>
+      </p>
+    </div>
+
+    <!-- Modern Input Area -->
+    <div
+      style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(30px); padding: 24px; border-top: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 -4px 20px rgba(0,0,0,0.1);">
+      <div style="max-width: 800px; margin: 0 auto;">
+
+        <!-- Title and Tags Row -->
+        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+          <div style="position: relative; flex: 1;">
+            <input id="pn-title" placeholder="Title"
+              style="width: 100%; padding: 14px 20px 14px 44px; border-radius: 20px; border: 1px solid rgba(148, 163, 184, 0.1); background: rgba(51, 65, 85, 0.3); backdrop-filter: blur(10px); color: #f1f5f9; font-size: 15px; outline: none; box-sizing: border-box; transition: all 0.3s ease; font-weight: 400;"
+              onfocus="this.style.background='rgba(51, 65, 85, 0.5)'; this.style.borderColor='rgba(6, 214, 160, 0.3)'; this.style.boxShadow='0 0 0 3px rgba(6, 214, 160, 0.1)'"
+              onblur="this.style.background='rgba(51, 65, 85, 0.3)'; this.style.borderColor='rgba(148, 163, 184, 0.1)'; this.style.boxShadow='none'">
+            <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"
+              width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z" />
+            </svg>
+          </div>
+          <div style="position: relative; flex: 1;">
+            <input id="pn-tags" placeholder="Tags (comma separated)"
+              style="width: 100%; padding: 14px 20px 14px 44px; border-radius: 20px; border: 1px solid rgba(148, 163, 184, 0.1); background: rgba(51, 65, 85, 0.3); backdrop-filter: blur(10px); color: #f1f5f9; font-size: 15px; outline: none; box-sizing: border-box; transition: all 0.3s ease; font-weight: 400;"
+              onfocus="this.style.background='rgba(51, 65, 85, 0.5)'; this.style.borderColor='rgba(6, 214, 160, 0.3)'; this.style.boxShadow='0 0 0 3px rgba(6, 214, 160, 0.1)'"
+              onblur="this.style.background='rgba(51, 65, 85, 0.3)'; this.style.borderColor='rgba(148, 163, 184, 0.1)'; this.style.boxShadow='none'">
+            <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"
+              width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M5.5,7A1.5,1.5 0 0,1 4,5.5A1.5,1.5 0 0,1 5.5,4A1.5,1.5 0 0,1 7,5.5A1.5,1.5 0 0,1 5.5,7M21.41,11.58L12.41,2.58C12.05,2.22 11.55,2 11,2H4C2.89,2 2,2.89 2,4V11C2,11.55 2.22,12.05 2.59,12.42L11.58,21.41C11.95,21.78 12.45,22 13,22C13.55,22 14.05,21.78 14.41,21.41L21.41,14.41C21.78,14.05 22,13.55 22,13C22,12.45 21.78,11.95 21.41,11.58Z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Main Input Area -->
+        <div style="display: flex; align-items: end; gap: 12px;">
+          <div
+            style="flex: 1; background: rgba(51, 65, 85, 0.3); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 24px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; transition: all 0.3s ease; position: relative;"
+            onfocus="this.style.background='rgba(51, 65, 85, 0.5)'; this.style.borderColor='rgba(6, 214, 160, 0.3)'">
+            <textarea id="pn-content" placeholder="Write your note here..."
+              style="flex: 1; border: none; background: transparent; color: #f1f5f9; font-size: 16px; outline: none; resize: none; min-height: 28px; max-height: 140px; font-family: inherit; line-height: 1.5; font-weight: 400;"></textarea>
+            <label
+              style="color: #06d6a0; display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; white-space: nowrap; font-weight: 500; transition: all 0.2s ease;"
+              onmouseover="this.style.color='#00a884'" onmouseout="this.style.color='#06d6a0'">
+              <input type="checkbox" id="pn-pin" style="margin: 0; accent-color: #06d6a0; width: 16px; height: 16px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+              </svg>
+            </label>
+          </div>
+
+          <!-- Send Button -->
+          <button id="pn-save-btn"
+            style="width: 56px; height: 56px; background: linear-gradient(135deg, #06d6a0 0%, #00a884 100%); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 20px rgba(6, 214, 160, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 25px rgba(6, 214, 160, 0.4)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(6, 214, 160, 0.3)'">
+            <div
+              style="position: absolute; inset: 0; background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);">
+            </div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+            </svg>
+          </button>
+
+          <!-- Cancel Edit Button -->
+          <button id="pn-cancel-edit"
+            style="display: none; width: 56px; height: 56px; background: linear-gradient(135deg, #64748b 0%, #475569 100%); border: none; border-radius: 50%; cursor: pointer; color: white; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: all 0.3s ease;"
+            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-nightcore" class="page">
+    <h2>🎵 Nightcore Converter</h2>
+
+    <form id="nightcoreForm">
+      <!-- Input file -->
+      <label for="audioInput" class="file-label">
+        📂 Pilih Lagu
+      </label>
+      <span id="fileName" class="file-name"></span>
+      <input type="file" id="audioInput" accept="audio/*" required hidden>
+
+      <!-- Tombol convert -->
+      <button id="convertBtn" type="submit" class="submit">🚀 Convert to Nightcore</button>
+    </form>
+
+    <!-- Hasil -->
+    <div id="nightcoreResult">
+      <h3>✅ Hasil Nightcore:</h3>
+      <audio id="nightcorePlayer" controls></audio>
+      <br>
+      <a id="downloadNightcore" download="nightcore.wav">
+        ⬇️ Download
+      </a>
+    </div>
+  </div>
+
+  <style>
+    /* Container utama */
+    #page-nightcore {
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    /* Judul */
+    #page-nightcore h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 1rem;
+    }
+
+    /* Form */
+    #nightcoreForm {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Tombol pilih file */
+    .file-label {
+      padding: 0.7rem 1.5rem;
+      background: #4ecdc4;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .file-label:hover {
+      background: #3bbdb3;
+      transform: scale(1.05);
+    }
+
+    /* Nama file */
+    .file-name {
+      color: #555;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    /* Tombol convert */
+    #nightcoreForm .submit {
+      padding: 0.8rem 1.5rem;
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #nightcoreForm .submit:hover {
+      background: #2563eb;
+      transform: scale(1.05);
+    }
+
+    /* Bagian hasil */
+    #nightcoreResult {
+      margin-top: 1.5rem;
+      display: none;
+      text-align: center;
+    }
+
+    /* Tombol download */
+    #downloadNightcore {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background: #10b981;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #downloadNightcore:hover {
+      background: #059669;
+      transform: scale(1.05);
+    }
+  </style>
+
+
+  <!-- Notification -->
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js"></script>
+
+
+  <script type="module">
+    // ===== Klien API (menggantikan Firebase Firestore + Supabase) =====
+    const TOKEN_KEY = 'authToken';
+
+    // Pembungkus timestamp supaya kompatibel dengan kode lama (.toDate(), .toMillis())
+    class Ts {
+      constructor(iso) { this.iso = iso; }
+      toDate() { return new Date(this.iso); }
+      toMillis() { return new Date(this.iso).getTime(); }
+      toJSON() { return this.iso; }
+    }
+    const TS_FIELDS = ['createdAt', 'updatedAt', 'lastEdited', 'waktu'];
+    function reviveTimestamps(item) {
+      for (const k of TS_FIELDS) if (typeof item[k] === 'string') item[k] = new Ts(item[k]);
+      return item;
+    }
+
+    const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function showLogin() {
+      const modal = document.getElementById('passwordModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    async function apiFetch(path, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      if (options.body && !(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+        options = { ...options, body: JSON.stringify(options.body) };
+      }
+      const res = await fetch(path, { ...options, headers });
+      if (res.status === 401 && path !== '/api/auth/login') {
+        localStorage.removeItem(TOKEN_KEY);
+        showLogin();
+        throw new Error('Belum login');
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+      return data;
+    }
+
+    const api = {
+      get: (p) => apiFetch(p),
+      post: (p, body) => apiFetch(p, { method: 'POST', body }),
+      put: (p, body) => apiFetch(p, { method: 'PUT', body }),
+      del: (p) => apiFetch(p, { method: 'DELETE' }),
+      upload: (p, formData) => apiFetch(p, { method: 'POST', body: formData }),
+    };
+
+    let allNotes = [];
+    let currentEditId = null;
+    let currentFilter = 'all';
+    let currentTimeFilter = 'all';
+    let currentCategoryFilter = 'all';
+    let currentSort = 'newest';
+    let selectedMood = null;
+    let selectedCategory = null;
+    let isAnonymous = false;
+    // userId sekarang adalah ID akun sungguhan (dari server), diisi setelah login berhasil.
+    // Sebelum login, bernilai null — semua pemanggilan API yang butuh login akan menampilkan modal login dulu.
+    let userId = null;
+    let currentUsername = null;
+    let voiceRecording = false;
+    let mediaRecorder = null;
+    let recordingChunks = [];
+
+    // Challenges array
+    const dailyChallenges = [
+      "Ceritakan satu hal kecil yang membuat kamu tersenyum hari ini!",
+      "Apa yang paling kamu syukuri minggu ini?",
+      "Bagikan pengalaman belajar terbaru kamu!",
+      "Ceritakan tentang seseorang yang menginspirasi kamu!",
+      "Apa rencana kamu untuk menjadi versi terbaik dari diri kamu?",
+      "Bagikan momen kebahagiaan sederhana yang kamu alami!",
+      "Ceritakan tentang pencapaian kecil yang membuatmu bangga!"
+    ];
+
+    // Mood prediction words
+    const moodWords = {
+      happy: ['senang', 'bahagia', 'gembira', 'excited', 'amazing', 'bagus', 'mantap', 'keren', 'suka', 'cinta'],
+      sad: ['sedih', 'down', 'kecewa', 'galau', 'hancur', 'putus', 'gagal', 'susah', 'sulit'],
+      angry: ['kesel', 'marah', 'benci', 'jengkel', 'sebel', 'dongkol', 'emosi', 'geram'],
+      excited: ['excited', 'antusias', 'semangat', 'energik', 'bersemangat', 'wow', 'keren', 'luar biasa'],
+      confused: ['bingung', 'confused', 'pusing', 'ragu', 'tidak tahu', 'gimana', 'kayak gimana'],
+      grateful: ['syukur', 'terima kasih', 'grateful', 'berkat', 'alhamdulillah', 'thanks']
+    };
+
+    // DOM elements
+    const noteForm = document.getElementById('noteForm');
+    const editForm = document.getElementById('editForm');
+    const notesList = document.getElementById('notesList');
+    const popularNotes = document.getElementById('popularNotes');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const anonymousSwitch = document.getElementById('anonymousSwitch');
+    const catatan = document.getElementById('catatan');
+    const charCount = document.getElementById('charCount');
+    const editCatatan = document.getElementById('editCatatan');
+    const editCharCount = document.getElementById('editCharCount');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const themeToggleMain = document.getElementById("theme-toggle-main");
+    const themeSwitcher = document.querySelector(".theme-switcher");
+
+    themeToggleMain.addEventListener("click", () => {
+      themeSwitcher.classList.toggle("show");
+    });
+
+
+    // Initialize
+    initializeEventListeners();
+    // Tunggu identitas user (loadCurrentUser) selesai dulu, supaya tombol edit/hapus
+    // langsung tahu mana cerita milik sendiri sejak render pertama.
+    loadCurrentUser().then(loadNotes);
+    loadWeather();
+    generateDailyChallenge();
+    generateMoodCalendar();
+
+    const lastPage = localStorage.getItem('lastPage');
+    if (lastPage && document.getElementById(lastPage)) {
+      switchPage(lastPage);
+    } else {
+      switchPage('page-tulis');
+    }
+
+    function initializeEventListeners() {
+      // Navigation
+      document.getElementById('btn-tulis').addEventListener('click', () => switchPage('page-tulis'));
+      document.getElementById('btn-daftar').addEventListener('click', () => switchPage('page-daftar'));
+      document.getElementById('btn-trending').addEventListener('click', () => switchPage('page-trending'));
+      document.getElementById('btn-analytics').addEventListener('click', () => switchPage('page-analytics'));
+      document.getElementById('btn-mood-map').addEventListener('click', () => switchPage('page-mood-map'));
+      document.getElementById('btn-daily-notes').addEventListener('click', () => switchPage('page-daily-notes'));
+      document.getElementById('btn-nightcore').addEventListener('click', () => switchPage('page-nightcore'));
+      document.getElementById('btn-private-notes').addEventListener('click', () => switchPage('pn-page'));
+
+
+      // Forms
+      noteForm.addEventListener('submit', handleSubmitNote);
+      editForm.addEventListener('submit', handleEditNote);
+
+      // Selectors
+      document.querySelectorAll('.mood-option').forEach(option => {
+        option.addEventListener('click', () => selectMood(option.dataset.mood));
+      });
+
+      document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', () => selectCategory(option.dataset.category));
+      });
+
+      // Toggles and inputs
+      anonymousSwitch.addEventListener('click', toggleAnonymous);
+      catatan.addEventListener('input', () => {
+        updateCharCount();
+        predictMood();
+      });
+      editCatatan.addEventListener('input', updateEditCharCount);
+
+      // Voice recording
+      voiceBtn.addEventListener('click', toggleVoiceRecording);
+
+      // Search and filters
+      searchInput.addEventListener('input', filterNotes);
+      sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        filterNotes();
+      });
+
+      // Filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+      });
+
+      document.querySelectorAll('.time-btn').forEach(btn => {
+        if (btn.dataset.time) {
+          btn.addEventListener('click', () => setTimeFilter(btn.dataset.time));
+        }
+        if (btn.dataset.categoryFilter) {
+          btn.addEventListener('click', () => setCategoryFilter(btn.dataset.categoryFilter));
+        }
+      });
+
+      // Modal
+      document.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('editModal')) {
+          closeEditModal();
+        }
+      });
+    }
+
+    function selectMood(mood) {
+      document.querySelectorAll('.mood-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      document.querySelector(`[data-mood="${mood}"]`).classList.add('selected');
+      selectedMood = mood;
+    }
+
+    function selectCategory(category) {
+      document.querySelectorAll('.category-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      document.querySelector(`[data-category="${category}"]`).classList.add('selected');
+      selectedCategory = category;
+    }
+
+    function toggleAnonymous() {
+      isAnonymous = !isAnonymous;
+      anonymousSwitch.classList.toggle('active', isAnonymous);
+      const namaInput = document.getElementById('nama');
+      namaInput.disabled = isAnonymous;
+      if (isAnonymous) {
+        namaInput.value = 'Anonim';
+        namaInput.style.background = '#f5f5f5';
+      } else {
+        namaInput.value = '';
+        namaInput.style.background = 'rgba(255,255,255,0.9)';
+      }
+    }
+
+    function updateCharCount() {
+      const count = catatan.value.length;
+      charCount.textContent = count;
+      charCount.parentElement.classList.toggle('warning', count > 450);
+    }
+
+    function updateEditCharCount() {
+      const count = editCatatan.value.length;
+      editCharCount.textContent = count;
+      editCharCount.parentElement.classList.toggle('warning', count > 450);
+    }
+
+    function predictMood() {
+      const text = catatan.value.toLowerCase();
+      let scores = {};
+
+      Object.keys(moodWords).forEach(mood => {
+        scores[mood] = 0;
+        moodWords[mood].forEach(word => {
+          if (text.includes(word)) {
+            scores[mood]++;
+          }
+        });
+      });
+
+      const predictedMood = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+      const maxScore = Math.max(...Object.values(scores));
+
+      if (maxScore > 0) {
+        const moodEmojis = {
+          happy: '😊',
+          sad: '😢',
+          angry: '😠',
+          excited: '🤩',
+          confused: '😕',
+          grateful: '🙏'
+        };
+
+        document.getElementById('predictedMood').textContent = moodEmojis[predictedMood];
+        document.getElementById('moodPrediction').textContent = `Sepertinya kamu ${predictedMood}...`;
+      } else {
+        document.getElementById('predictedMood').textContent = '🤔';
+        document.getElementById('moodPrediction').textContent = 'Tulis lebih banyak untuk prediksi yang akurat...';
+      }
+    }
+
+    async function toggleVoiceRecording() {
+      if (!voiceRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          recordingChunks = [];
+
+          mediaRecorder.ondataavailable = (event) => {
+            recordingChunks.push(event.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(recordingChunks, { type: 'audio/wav' });
+            // In a real app, you'd upload this to a speech-to-text service
+            voiceStatus.textContent = 'Rekaman selesai! (Fitur speech-to-text akan datang)';
+          };
+
+          mediaRecorder.start();
+          voiceRecording = true;
+          voiceBtn.classList.add('recording');
+          voiceStatus.textContent = 'Merekam... Klik lagi untuk berhenti';
+
+        } catch (error) {
+          showNotification('Browser tidak mendukung perekaman suara', 'error');
+        }
+      } else {
+        mediaRecorder.stop();
+        voiceRecording = false;
+        voiceBtn.classList.remove('recording');
+        voiceStatus.textContent = 'Klik untuk mulai merekam suara (opsional)';
+      }
+    }
+
+    function generateDailyChallenge() {
+      const today = new Date();
+      const challengeIndex = today.getDate() % dailyChallenges.length;
+      document.getElementById('dailyChallenge').textContent = dailyChallenges[challengeIndex];
+    }
+
+    function generateMoodCalendar() {
+      const calendar = document.getElementById('moodCalendar');
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      calendar.innerHTML = '';
+
+      // Days of week header
+      const daysOfWeek = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+      daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.style.cssText = 'text-align: center; font-weight: bold; padding: 0.5rem;';
+        dayHeader.textContent = day;
+        calendar.appendChild(dayHeader);
+      });
+
+      // Empty cells for days before month start
+      const startDay = (firstDay.getDay() + 6) % 7; // Convert to Monday = 0
+      for (let i = 0; i < startDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.classList.add('mood-day');
+        calendar.appendChild(emptyDay);
+      }
+
+      // Days of the month
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('mood-day');
+        dayElement.style.background = day === today.getDate() ? '#4ecdc4' : '#f0f0f0';
+        dayElement.style.color = day === today.getDate() ? 'white' : '#333';
+
+        // Simulate random moods for past days
+        if (day < today.getDate()) {
+          const moods = ['😊', '😢', '😠', '🤩', '😕', '🙏'];
+          dayElement.textContent = moods[day % moods.length];
+        } else if (day === today.getDate()) {
+          dayElement.textContent = selectedMood ? getMoodEmoji(selectedMood) : day;
+        } else {
+          dayElement.textContent = day;
+          dayElement.style.opacity = '0.5';
+        }
+
+        dayElement.addEventListener('click', () => {
+          if (day <= today.getDate()) {
+            showNotification(`Mood tanggal ${day}: ${dayElement.textContent}`);
+          }
+        });
+
+        calendar.appendChild(dayElement);
+      }
+    }
+
+    async function loadWeather() {
+      const weatherWidget = document.getElementById('weatherWidget');
+      const lat = 3.5952;   // Medan latitude
+      const lon = 98.6722;  // Medan longitude
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&timezone=Asia%2FJakarta`;
+
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const c = data.current;
+
+        const { emoji, desc } = mapWeatherCode(c.weather_code);
+
+        const updatedAt = new Date(c.time).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+        // Build compact widget UI
+        weatherWidget.innerHTML = `
+        <span>${emoji}</span>
+        <span>${desc}</span>
+        <span>${Math.round(c.temperature_2m)}°C</span>
+        <span>💧${Math.round(c.relative_humidity_2m)}%</span>
+        <span>💨${Math.round(c.wind_speed_10m)} km/j</span>
+      `;
+        weatherWidget.title = `Medan • Diperbarui ${updatedAt}`;
+      } catch (err) {
+        console.error("Gagal memuat cuaca:", err);
+        weatherWidget.textContent = '🌤️ --°C';
+      } finally {
+        // refresh every 5 minutes
+        setTimeout(loadWeather, 5 * 60 * 1000);
+      }
+    }
+
+    function mapWeatherCode(code) {
+      // Mapping Open-Meteo WMO weather codes ke emoji + deskripsi Bahasa
+      const table = {
+        0: { emoji: '☀️', desc: 'Cerah' },
+        1: { emoji: '🌤️', desc: 'Sebagian cerah' },
+        2: { emoji: '⛅', desc: 'Berawan sebagian' },
+        3: { emoji: '☁️', desc: 'Berawan' },
+        45: { emoji: '🌫️', desc: 'Berkabut' },
+        48: { emoji: '🌫️', desc: 'Kabut membeku' },
+        51: { emoji: '🌦️', desc: 'Gerimis ringan' },
+        53: { emoji: '🌦️', desc: 'Gerimis sedang' },
+        55: { emoji: '🌧️', desc: 'Gerimis lebat' },
+        56: { emoji: '🌧️', desc: 'Gerimis beku ringan' },
+        57: { emoji: '🌧️', desc: 'Gerimis beku lebat' },
+        61: { emoji: '🌦️', desc: 'Hujan ringan' },
+        63: { emoji: '🌧️', desc: 'Hujan sedang' },
+        65: { emoji: '🌧️', desc: 'Hujan lebat' },
+        66: { emoji: '🌧️', desc: 'Hujan beku ringan' },
+        67: { emoji: '🌧️', desc: 'Hujan beku lebat' },
+        71: { emoji: '❄️', desc: 'Salju ringan' },
+        73: { emoji: '❄️', desc: 'Salju sedang' },
+        75: { emoji: '❄️', desc: 'Salju lebat' },
+        77: { emoji: '🌨️', desc: 'Butiran salju' },
+        80: { emoji: '🌦️', desc: 'Hujan lokal ringan' },
+        81: { emoji: '🌧️', desc: 'Hujan lokal sedang' },
+        82: { emoji: '⛈️', desc: 'Hujan lokal lebat' },
+        85: { emoji: '🌨️', desc: 'Hujan salju ringan' },
+        86: { emoji: '🌨️', desc: 'Hujan salju lebat' },
+        95: { emoji: '⛈️', desc: 'Badai petir' },
+        96: { emoji: '⛈️', desc: 'Badai petir + es kecil' },
+        99: { emoji: '⛈️', desc: 'Badai petir + es besar' },
+      };
+      return table[code] || { emoji: '🌤️', desc: 'Cuaca' };
+    }
+
+    // jalankan pas pertama kali load halaman
+    loadWeather();
+
+    function applyTheme(theme) {
+      // Hapus semua tema lama
+      document.body.classList.remove('theme-light', 'dark-mode', 'theme-wibu', 'theme-rainbow');
+
+      // Tambahkan tema baru
+      if (theme) {
+        document.body.classList.add(theme);
+      }
+
+      // Simpan tema aktif di localStorage
+      localStorage.setItem('activeTheme', theme || '');
+
+      // Update tombol aktif
+      document.querySelectorAll('.theme-switcher button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Cari tombol sesuai tema
+      const activeBtnId = theme ? theme.replace('.', '') : 'theme-light';
+      const activeBtn = document.getElementById(activeBtnId);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+    }
+
+
+    // Sakura Falling Animation 🌸
+    const sakuraContainer = document.querySelector(".sakura-container");
+    const body = document.body;
+
+    function createSakura() {
+      const sakura = document.createElement("div");
+      sakura.classList.add("sakura");
+
+      // Posisi random horizontal
+      sakura.style.left = Math.random() * window.innerWidth + "px";
+
+      // Ukuran random
+      const size = Math.random() * 12 + 10; // 10px - 22px
+      sakura.style.width = `${size}px`;
+      sakura.style.height = `${size}px`;
+
+      // Durasi jatuh random
+      sakura.style.animationDuration = Math.random() * 3 + 4 + "s";
+
+      // Delay random biar gak serempak
+      sakura.style.animationDelay = Math.random() * 3 + "s";
+
+      sakuraContainer.appendChild(sakura);
+
+      // Hapus setelah animasi selesai
+      setTimeout(() => {
+        sakura.remove();
+      }, 8000);
+    }
+
+    let sakuraInterval = null;
+
+    function startSakura() {
+      if (!sakuraInterval) {
+        sakuraContainer.style.display = "block";
+        sakuraInterval = setInterval(createSakura, 300); // tiap 300ms munculin kelopak baru
+      }
+    }
+
+    function stopSakura() {
+      sakuraContainer.style.display = "none";
+      sakuraContainer.innerHTML = "";
+      clearInterval(sakuraInterval);
+      sakuraInterval = null;
+    }
+
+    // Cek kalau body punya class "theme-wibu"
+    const observer = new MutationObserver(() => {
+      if (body.classList.contains("theme-wibu")) {
+        startSakura();
+      } else {
+        stopSakura();
+      }
+    });
+
+    observer.observe(body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    document.getElementById('theme-light').addEventListener('click', () => applyTheme(''));
+    document.getElementById('theme-dark').addEventListener('click', () => applyTheme('dark-mode'));
+    document.getElementById('theme-wibu').addEventListener('click', () => applyTheme('theme-wibu'));
+
+    async function handleSubmitNote(e) {
+      e.preventDefault();
+
+      const nama = isAnonymous ? 'Anonim' : document.getElementById('nama').value.trim();
+      const catatanText = catatan.value.trim();
+
+      if ((!isAnonymous && !nama) || !catatanText || !selectedMood || !selectedCategory) {
+        showNotification('Harap lengkapi semua field!', 'error');
+        return;
+      }
+
+      if (catatanText.length > 500) {
+        showNotification('Cerita terlalu panjang! Maksimal 500 karakter.', 'error');
+        return;
+      }
+
+      try {
+        await api.post('/api/notes', {
+          nama, catatan: catatanText, mood: selectedMood,
+          category: selectedCategory, isAnonymous, userId
+        });
+        await refreshNotes();
+
+        noteForm.reset();
+        selectedMood = null;
+        selectedCategory = null;
+        document.querySelectorAll('.mood-option').forEach(option => {
+          option.classList.remove('selected');
+        });
+        document.querySelectorAll('.category-option').forEach(option => {
+          option.classList.remove('selected');
+        });
+        updateCharCount();
+
+        // Update daily streak
+        updateDailyStreak();
+
+        showNotification('Cerita berhasil dikirim! 🎉');
+        switchPage('page-daftar');
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        showNotification('Terjadi kesalahan saat mengirim cerita.', 'error');
+      }
+    }
+
+    async function handleEditNote(e) {
+      e.preventDefault();
+
+      const newText = editCatatan.value.trim();
+
+      if (!newText) {
+        showNotification('Cerita tidak boleh kosong!', 'error');
+        return;
+      }
+
+      if (newText.length > 500) {
+        showNotification('Cerita terlalu panjang! Maksimal 500 karakter.', 'error');
+        return;
+      }
+
+      try {
+        await api.put('/api/notes/' + currentEditId, { catatan: newText });
+        await refreshNotes();
+
+        showNotification('Cerita berhasil diupdate! ✨');
+        closeEditModal();
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        showNotification('Terjadi kesalahan saat mengupdate cerita.', 'error');
+      }
+    }
+
+    function openEditModal(id, currentText) {
+      currentEditId = id;
+      editCatatan.value = currentText;
+      updateEditCharCount();
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+      currentEditId = null;
+      editCatatan.value = '';
+    }
+
+    window.closeEditModal = closeEditModal;
+
+    async function toggleReaction(noteId, reactionType) {
+      try {
+        await api.post(`/api/notes/${noteId}/reactions`, { type: reactionType, userId });
+        await refreshNotes();
+      } catch (error) {
+        console.error("Error toggling reaction: ", error);
+        showNotification('Terjadi kesalahan saat memberikan reaksi.', 'error');
+      }
+    }
+
+    async function addComment(noteId, comment) {
+      if (!comment.trim()) return;
+
+      try {
+        await api.post(`/api/notes/${noteId}/comments`, {
+          text: comment,
+          author: isAnonymous ? 'Anonim' : document.getElementById('nama').value || 'Anonymous',
+          userId
+        });
+        await refreshNotes();
+        showNotification('Komentar berhasil ditambahkan! 💬');
+      } catch (error) {
+        console.error("Error adding comment: ", error);
+        showNotification('Terjadi kesalahan saat menambahkan komentar.', 'error');
+      }
+    }
+
+    async function deleteNote(id) {
+      if (confirm("Yakin ingin menghapus cerita ini?")) {
+        try {
+          await api.del('/api/notes/' + id);
+          await refreshNotes();
+          showNotification('Cerita berhasil dihapus! 🗑️');
+        } catch (error) {
+          console.error("Error deleting document: ", error);
+          showNotification('Terjadi kesalahan saat menghapus cerita.', 'error');
+        }
+      }
+    }
+
+    function shareNote(noteId) {
+      const url = `${window.location.origin}${window.location.pathname}#note-${noteId}`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: 'Keluh Kesah',
+          text: 'Lihat cerita menarik ini!',
+          url: url
+        });
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          showNotification('Link berhasil disalin! 🔗');
+        });
+      }
+    }
+
+    function updateDailyStreak() {
+      const today = new Date().toDateString();
+      const lastPost = localStorage.getItem('lastPostDate');
+      let streak = parseInt(localStorage.getItem('dailyStreak') || '0');
+
+      if (lastPost !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (lastPost === yesterday.toDateString()) {
+          streak++;
+        } else if (lastPost !== today) {
+          streak = 1;
+        }
+
+        localStorage.setItem('dailyStreak', streak.toString());
+        localStorage.setItem('lastPostDate', today);
+        document.getElementById('dailyStreak').textContent = streak;
+      }
+    }
+
+    function formatTime(ts) {
+      if (!ts) return "Menunggu waktu...";
+
+      const date = ts.toDate ? ts.toDate() : new Date(ts); // Firestore Timestamp atau JS Date
+      const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+
+      if (diff < 60) return "Baru saja";
+      if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`;
+      if (diff < 604800) return `${Math.floor(diff / 86400)} hari yang lalu`;
+
+      return date.toLocaleString("id-ID", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+
+    function getMoodBadgeClass(mood) {
+      return `mood-${mood}`;
+    }
+
+    function getMoodEmoji(mood) {
+      const emojis = {
+        happy: '😊',
+        sad: '😢',
+        angry: '😠',
+        excited: '🤩',
+        confused: '😕',
+        grateful: '🙏'
+      };
+      return emojis[mood] || '😐';
+    }
+
+    function getCategoryEmoji(category) {
+      const emojis = {
+        personal: '👤',
+        work: '💼',
+        family: '👨‍👩‍👧‍👦',
+        love: '💕',
+        health: '🏥',
+        education: '🎓'
+      };
+      return emojis[category] || '📝';
+    }
+
+    function createNoteElement(docSnap) {
+      const data = docSnap.data();
+      const waktuTs = data.createdAt || data.waktu;
+      const waktuFormatted = formatTime(waktuTs);
+      const li = document.createElement("li");
+      li.id = `note-${docSnap.id}`;
+
+      const isOwner = data.userId === userId;
+      const authorName = data.isAnonymous ? '👤 Anonim' : `👤 ${data.nama}`;
+
+      const likesCount = data.likes ? data.likes.length : 0;
+      const heartsCount = data.hearts ? data.hearts.length : 0;
+      const supportsCount = data.supports ? data.supports.length : 0;
+      const commentsCount = data.comments ? data.comments.length : 0;
+
+      const userLiked = data.likes ? data.likes.includes(userId) : false;
+      const userHearted = data.hearts ? data.hearts.includes(userId) : false;
+      const userSupported = data.supports ? data.supports.includes(userId) : false;
+
+      li.innerHTML = `
+        <div class="note-header">
+          <div class="note-info">
+            <div class="author-info">
+              <span class="author-name">${authorName}</span>
+              <span class="mood-badge ${getMoodBadgeClass(data.mood)}">${getMoodEmoji(data.mood)} ${data.mood}</span>
+              ${data.category ? `<span class="category-badge">${getCategoryEmoji(data.category)} ${data.category}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="note-text">${data.catatan}</div>
+        
+        <div class="comments-section">
+          <div class="comments-toggle" onclick="toggleComments('${docSnap.id}')">
+            💬 ${commentsCount} komentar ${commentsCount > 0 ? '(klik untuk lihat)' : ''}
+          </div>
+          <div class="comments-list" id="comments-${docSnap.id}" style="display: none;"></div>
+          <div class="comment-form">
+            <input type="text" class="comment-input" id="comment-input-${docSnap.id}" placeholder="Tulis komentar...">
+            <button class="comment-btn" onclick="submitComment('${docSnap.id}')">Kirim</button>
+          </div>
+        </div>
+        
+        <div class="note-footer">
+          <div class="timestamp">🕒 ${waktuFormatted}</div>
+          <div class="reactions-section">
+            <button class="reaction-btn ${userLiked ? 'active' : ''}" onclick="toggleReaction('${docSnap.id}', 'likes')">
+              👍 ${likesCount}
+            </button>
+            <button class="reaction-btn ${userHearted ? 'active' : ''}" onclick="toggleReaction('${docSnap.id}', 'hearts')">
+              ❤️ ${heartsCount}
+            </button>
+            <button class="reaction-btn ${userSupported ? 'active' : ''}" onclick="toggleReaction('${docSnap.id}', 'supports')">
+              🤗 ${supportsCount}
+            </button>
+          </div>
+          <div class="actions-section">
+            ${isOwner ? `
+            <button class="action-btn edit-btn" onclick="openEditModal('${docSnap.id}', '${data.catatan.replace(/'/g, "\\'")}')" title="Edit">
+              ✏️ Edit
+            </button>` : ''}
+            <button class="action-btn share-btn" onclick="shareNote('${docSnap.id}')" title="Bagikan">
+              🔗 Bagikan
+            </button>
+            ${isOwner ? `
+            <button class="action-btn delete-btn" onclick="deleteNote('${docSnap.id}')" title="Hapus">
+              🗑️ Hapus
+            </button>` : ''}
+          </div>
+        </div>
+      `;
+
+      return li;
+    }
+
+    function toggleComments(noteId) {
+      const commentsList = document.getElementById(`comments-${noteId}`);
+      const isVisible = commentsList.style.display !== 'none';
+
+      if (isVisible) {
+        commentsList.style.display = 'none';
+      } else {
+        const note = allNotes.find(n => n.id === noteId);
+        if (note && note.comments) {
+          commentsList.innerHTML = note.comments.map(comment => `
+            <div class="comment">
+              <strong>${comment.author}:</strong> ${comment.text}
+              <div style="font-size: 0.8em; color: #666; margin-top: 0.2rem;">
+                ${new Date(comment.timestamp).toLocaleString('id-ID')}
+              </div>
+            </div>
+          `).join('');
+        }
+        commentsList.style.display = 'block';
+      }
+    }
+
+    function submitComment(noteId) {
+      const input = document.getElementById(`comment-input-${noteId}`);
+      const comment = input.value.trim();
+
+      if (comment) {
+        addComment(noteId, comment);
+        input.value = '';
+      }
+    }
+
+    var lastNotesJson = '';
+    async function refreshNotes(force = false) {
+      try {
+        const data = await api.get('/api/notes');
+        const json = JSON.stringify(data);
+        if (!force && json === lastNotesJson) return; // tidak ada perubahan, jangan render ulang
+        lastNotesJson = json;
+        allNotes = data.map(reviveTimestamps);
+        updateStats();
+        filterNotes();
+        updatePopularNotes();
+        updateAnalytics();
+        generateWordCloud();
+      } catch (err) {
+        console.error('Gagal memuat cerita:', err);
+      }
+    }
+
+    function loadNotes() {
+      refreshNotes(true);
+      // Pengganti realtime Firestore: cek perubahan tiap 8 detik saat tab aktif
+      setInterval(() => {
+        if (!document.hidden && localStorage.getItem(TOKEN_KEY)) refreshNotes();
+      }, 8000);
+    }
+
+
+    function filterNotes() {
+      let filteredNotes = [...allNotes]; // <- sebelumnya [.allNotes]
+
+      const getDate = (n) =>
+        n.createdAt ? (n.createdAt.toDate ? n.createdAt.toDate() : new Date(n.createdAt))
+          : (n.waktu ? (n.waktu.toDate ? n.waktu.toDate() : new Date(n.waktu)) : null);
+
+
+      if (currentTimeFilter !== 'all') {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        filteredNotes = filteredNotes.filter(note => {
+          const noteDate = getDate(note);
+          if (!noteDate) return false;
+          switch (currentTimeFilter) {
+            case 'today': return noteDate >= today;
+            case 'week': return noteDate >= weekAgo;
+            case 'month': return noteDate >= monthAgo;
+            default: return true;
+          }
+        });
+      }
+
+      filteredNotes.sort((a, b) => {
+        const da = getDate(a)?.getTime() || 0;
+        const db = getDate(b)?.getTime() || 0;
+        switch (currentSort) {
+          case 'oldest': return da - db;
+          case 'popular': return (b.totalReactions || 0) - (a.totalReactions || 0);
+          case 'random': return Math.random() - 0.5;
+          default: return db - da; // newest
+        }
+      });
+
+
+      // Filter by search
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      if (searchTerm) {
+        filteredNotes = filteredNotes.filter(note =>
+          note.catatan.toLowerCase().includes(searchTerm) ||
+          note.nama.toLowerCase().includes(searchTerm) ||
+          (note.category && note.category.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Filter by mood
+      if (currentFilter !== 'all') {
+        filteredNotes = filteredNotes.filter(note => note.mood === currentFilter);
+      }
+
+      // Filter by time
+      if (currentTimeFilter !== 'all') {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        filteredNotes = filteredNotes.filter(note => {
+          if (!note.waktu) return false;
+          const noteDate = note.waktu.toDate();
+
+          switch (currentTimeFilter) {
+            case 'today':
+              return noteDate >= today;
+            case 'week':
+              return noteDate >= weekAgo;
+            case 'month':
+              return noteDate >= monthAgo;
+            default:
+              return true;
+          }
+        });
+      }
+
+      // Filter by category
+      if (currentCategoryFilter !== 'all') {
+        filteredNotes = filteredNotes.filter(note => note.category === currentCategoryFilter);
+      }
+
+      // Sort
+      filteredNotes.sort((a, b) => {
+        switch (currentSort) {
+          case 'oldest':
+            return (a.waktu?.toDate() || 0) - (b.waktu?.toDate() || 0);
+          case 'popular':
+            return (b.totalReactions || 0) - (a.totalReactions || 0);
+          case 'random':
+            return Math.random() - 0.5;
+          default: // newest
+            return (b.waktu?.toDate() || 0) - (a.waktu?.toDate() || 0);
+        }
+      });
+
+      displayNotes(filteredNotes);
+    }
+
+    function displayNotes(notes) {
+      notesList.innerHTML = "";
+
+      if (notes.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      notes.forEach((note) => {
+        const li = createNoteElement({ id: note.id, data: () => note });
+        notesList.appendChild(li);
+      });
+    }
+
+    function updatePopularNotes() {
+      const popular = [...allNotes]
+        .sort((a, b) => (b.totalReactions || 0) - (a.totalReactions || 0))
+        .slice(0, 5);
+
+      popularNotes.innerHTML = "";
+
+      if (popular.length === 0) {
+        popularNotes.innerHTML = '<li style="text-align: center; padding: 2rem; color: #666;">Belum ada cerita populer</li>';
+        return;
+      }
+
+      popular.forEach((note) => {
+        const li = createNoteElement({ id: note.id, data: () => note });
+        popularNotes.appendChild(li);
+      });
+    }
+
+    function generateWordCloud() {
+      const wordFreq = {};
+      const commonWords = ['dan', 'yang', 'di', 'ke', 'dari', 'untuk', 'dengan', 'pada', 'adalah', 'ini', 'itu', 'tidak', 'juga', 'atau', 'tapi', 'karena', 'saya', 'aku', 'kamu', 'dia'];
+
+      allNotes.forEach(note => {
+        const words = note.catatan.toLowerCase().split(/\s+/);
+        words.forEach(word => {
+          word = word.replace(/[^\w\s]/g, '');
+          if (word.length > 3 && !commonWords.includes(word)) {
+            wordFreq[word] = (wordFreq[word] || 0) + 1;
+          }
+        });
+      });
+
+      const sortedWords = Object.entries(wordFreq)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 15);
+
+      const wordCloud = document.getElementById('wordCloud');
+      wordCloud.innerHTML = sortedWords.map(([word, freq]) => {
+        const size = Math.min(3, 1 + (freq / Math.max(...Object.values(wordFreq))) * 2);
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#ff7675', '#74b9ff'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        return `<span style="font-size: ${size}rem; color: ${color}; margin: 0.5rem;">${word}</span>`;
+      }).join(' ');
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+      filterNotes();
+    }
+
+    function setTimeFilter(timeFilter) {
+      currentTimeFilter = timeFilter;
+      document.querySelectorAll('[data-time]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-time="${timeFilter}"]`).classList.add('active');
+      filterNotes();
+    }
+
+    function setCategoryFilter(categoryFilter) {
+      currentCategoryFilter = categoryFilter;
+      document.querySelectorAll('[data-category-filter]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-category-filter="${categoryFilter}"]`).classList.add('active');
+      filterNotes();
+    }
+
+    function updateStats() {
+      const totalPosts = allNotes.length;
+      const totalLikes = allNotes.reduce((sum, note) => sum + (note.totalReactions || 0), 0);
+      const uniqueUsers = new Set(allNotes.map(note => note.userId)).size;
+      const dailyStreak = parseInt(localStorage.getItem('dailyStreak') || '0');
+
+      document.getElementById('totalPosts').textContent = totalPosts;
+      document.getElementById('totalLikes').textContent = totalLikes;
+      document.getElementById('activeUsers').textContent = uniqueUsers;
+      document.getElementById('dailyStreak').textContent = dailyStreak;
+    }
+
+    function updateAnalytics() {
+      const totalPosts = allNotes.length;
+      const totalReactions = allNotes.reduce((sum, note) => sum + (note.totalReactions || 0), 0);
+      const avgReactions = totalPosts > 0 ? Math.round(totalReactions / totalPosts * 10) / 10 : 0;
+
+      // Count moods
+      const moodCounts = {};
+      allNotes.forEach(note => {
+        moodCounts[note.mood] = (moodCounts[note.mood] || 0) + 1;
+      });
+
+      const topMood = Object.keys(moodCounts).reduce((a, b) =>
+        moodCounts[a] > moodCounts[b] ? a : b, 'happy');
+
+      // Calculate most active hour
+      const hourCounts = {};
+      allNotes.forEach(note => {
+        if (note.waktu) {
+          const hour = note.waktu.toDate().getHours();
+          hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+        }
+      });
+
+      const mostActiveHour = Object.keys(hourCounts).reduce((a, b) =>
+        hourCounts[a] > hourCounts[b] ? a : b, '18');
+
+      document.getElementById('totalPostsAnalytics').textContent = totalPosts;
+      document.getElementById('totalReactionsAnalytics').textContent = totalReactions;
+      document.getElementById('avgReactionsAnalytics').textContent = avgReactions;
+      document.getElementById('topMoodAnalytics').textContent = getMoodEmoji(topMood);
+      document.getElementById('activeHoursAnalytics').textContent = `${mostActiveHour}:00`;
+      document.getElementById('longestStreakAnalytics').textContent = localStorage.getItem('longestStreak') || '0';
+
+      // Update mood chart
+      const moodChart = document.getElementById('moodChart');
+      moodChart.innerHTML = '';
+
+      Object.entries(moodCounts).forEach(([mood, count]) => {
+        const percentage = totalPosts > 0 ? Math.round(count / totalPosts * 100) : 0;
+        const bar = document.createElement('div');
+        bar.style.cssText = `
+          background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+          color: white;
+          padding: 1rem;
+          border-radius: 10px;
+          text-align: center;
+          min-width: 120px;
+        `;
+        bar.innerHTML = `
+          <div style="font-size: 1.5rem;">${getMoodEmoji(mood)}</div>
+          <div style="font-weight: bold;">${count}</div>
+          <div style="font-size: 0.8rem;">${percentage}%</div>
+        `;
+        moodChart.appendChild(bar);
+      });
+
+      // Update activity chart
+      const activityChart = document.getElementById('activityChart');
+      const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+      // Skip the headers and update activity bars
+      const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+      allNotes.forEach(note => {
+        if (note.waktu) {
+          const dayOfWeek = (note.waktu.toDate().getDay() + 6) % 7; // Convert to Monday = 0
+          dayCounts[dayOfWeek]++;
+        }
+      });
+
+      const maxCount = Math.max(...dayCounts) || 1;
+
+      dayCounts.forEach((count, index) => {
+        const intensity = count / maxCount;
+        const activityBar = document.createElement('div');
+        activityBar.style.cssText = `
+          background: rgba(78, 205, 196, ${0.2 + intensity * 0.8});
+          padding: 1rem;
+          border-radius: 5px;
+          text-align: center;
+          font-weight: bold;
+          color: ${intensity > 0.5 ? 'white' : '#333'};
+        `;
+        activityBar.textContent = count;
+        activityChart.appendChild(activityBar);
+      });
+    }
+
+    function switchPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+
+      document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      if (pageId === 'page-tulis') document.getElementById('btn-tulis').classList.add('active');
+      else if (pageId === 'page-daftar') document.getElementById('btn-daftar').classList.add('active');
+      else if (pageId === 'page-trending') document.getElementById('btn-trending').classList.add('active');
+      else if (pageId === 'page-analytics') document.getElementById('btn-analytics').classList.add('active');
+      else if (pageId === 'page-mood-map') document.getElementById('btn-mood-map').classList.add('active');
+      else if (pageId === 'page-daily-notes') document.getElementById('btn-daily-notes').classList.add('active');
+      else if (pageId === 'pn-page') document.getElementById('btn-private-notes').classList.add('active');
+      else if (pageId === 'page-nightcore') document.getElementById('btn-nightcore').classList.add('active');
+
+
+      localStorage.setItem('lastPage', pageId);
+
+      // Update mood calendar when switching to mood map page
+      if (pageId === 'page-mood-map') {
+        generateMoodCalendar();
+      }
+    }
+
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Make functions global for onclick handlers
+    window.toggleReaction = toggleReaction;
+    window.deleteNote = deleteNote;
+    window.shareNote = shareNote;
+    window.openEditModal = openEditModal;
+    window.toggleComments = toggleComments;
+    window.submitComment = submitComment;
+
+    // Auto-refresh features
+    setInterval(() => {
+      // Update relative timestamps
+      if (document.getElementById('page-daftar').classList.contains('active') ||
+        document.getElementById('page-trending').classList.contains('active')) {
+        document.querySelectorAll('.timestamp').forEach(timestamp => {
+          // Timestamp diperbarui pada refresh data berikutnya
+        });
+      }
+
+      // Update daily challenge
+      generateDailyChallenge();
+
+      // Update weather
+      loadWeather();
+    }, 60000);
+
+    // Handle deep linking to specific notes
+    if (window.location.hash.startsWith('#note-')) {
+      const noteId = window.location.hash.substring(6);
+      setTimeout(() => {
+        const noteElement = document.getElementById(`note-${noteId}`);
+        if (noteElement) {
+          switchPage('page-daftar');
+          noteElement.scrollIntoView({ behavior: 'smooth' });
+          noteElement.style.animation = 'pulse 2s ease-in-out';
+        }
+      }, 1000);
+    }
+
+    // Tombol theme rainbow
+    const themeRainbowBtn = document.getElementById("theme-rainbow");
+
+    themeRainbowBtn.addEventListener("click", () => {
+      document.body.classList.remove("theme-light", "theme-dark", "theme-wibu");
+      document.body.classList.add("theme-rainbow");
+      localStorage.setItem("theme", "rainbow");
+    });
+
+    // Simpan tema terakhir saat reload
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      document.body.classList.add(`theme-${savedTheme}`);
+    }
+
+
+    // Initialize streak counter
+    const currentStreak = parseInt(localStorage.getItem('dailyStreak') || '0');
+    const longestStreak = parseInt(localStorage.getItem('longestStreak') || '0');
+    if (currentStreak > longestStreak) {
+      localStorage.setItem('longestStreak', currentStreak.toString());
+    }
+
+    // Event listener tombol tema
+    document.getElementById("theme-light").addEventListener("click", () => applyTheme("theme-light"));
+    document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark-mode"));
+    document.getElementById("theme-wibu").addEventListener("click", () => applyTheme("theme-wibu"));
+    document.getElementById("theme-rainbow").addEventListener("click", () => applyTheme("theme-rainbow"));
+
+    // Terapkan tema terakhir saat reload
+
+    applyTheme(savedTheme);
+
+    // === FITUR KALENDER CATATAN ===
+    const calendarGrid = document.getElementById("calendarGrid");
+    const notesModal = document.getElementById("notesModal");
+    const notesListByDate = document.getElementById("notesListByDate");
+    const modalDateEl = document.getElementById("modalDate");
+    let selectedDate = null;
+
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let unsubscribeNotes = null;
+
+    // Render kalender sesuai bulan & tahun
+    function loadCalendar(year = currentYear, month = currentMonth) {
+      currentYear = year;
+      currentMonth = month;
+
+      const monthNames = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      document.getElementById("currentMonth").innerText =
+        `${monthNames[month]} ${year}`;
+
+      calendarGrid.innerHTML = "";
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // padding kosong sebelum tanggal 1
+      for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+        const emptyCell = document.createElement("div");
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      // isi tanggal
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement("div");
+        cell.classList.add("calendar-day");
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        cell.innerHTML = `<strong>${d}</strong>`;
+        cell.onclick = () => openNotesModal(dateStr);
+        cell.dataset.date = dateStr;
+        calendarGrid.appendChild(cell);
+      }
+
+      // ambil jumlah catatan per tanggal untuk bulan ini
+      const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+      const end = `${year}-${String(month + 1).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
+      refreshCalendarBadges(start, end);
+    }
+
+    var calendarRange = { start: '', end: '' };
+    async function refreshCalendarBadges(start = calendarRange.start, end = calendarRange.end) {
+      if (!start) return;
+      calendarRange = { start, end };
+      try {
+        const rows = await api.get(`/api/daily-notes?from=${start}&to=${end}`);
+        document.querySelectorAll(".note-count").forEach(b => b.remove());
+        rows.forEach(row => {
+          const cell = document.querySelector(`[data-date='${row.date}']`);
+          if (cell && row.count > 0) {
+            const badge = document.createElement("div");
+            badge.className = "note-count";
+            badge.innerText = row.count;
+            cell.appendChild(badge);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // buka modal untuk tanggal tertentu
+    function openNotesModal(dateStr) {
+      selectedDate = dateStr;
+      modalDateEl.innerText = dateStr;
+      notesListByDate.innerHTML = "Loading...";
+
+      renderDailyNotes(dateStr);
+
+      notesModal.classList.add("active");
+    }
+
+    async function renderDailyNotes(dateStr) {
+      try {
+        const { notes } = await api.get(`/api/daily-notes/${dateStr}`);
+        if (selectedDate !== dateStr) return;
+        if (!notes.length) {
+          notesListByDate.innerHTML = "<p>Belum ada catatan.</p>";
+          return;
+        }
+        notesListByDate.innerHTML = "<ul>" + notes.map(n =>
+          `<li>${escapeHtml(n.text)} ${n.userId === userId ? `<button type="button" onclick="deleteDailyNote('${n.id}')" title="Hapus" style="border:none;background:none;cursor:pointer">🗑️</button>` : ''}</li>`
+        ).join("") + "</ul>";
+      } catch (err) {
+        notesListByDate.innerHTML = "<p>Gagal memuat catatan.</p>";
+      }
+    }
+
+    window.deleteDailyNote = async (id) => {
+      if (!confirm("Hapus catatan ini?")) return;
+      try {
+        await api.del('/api/daily-notes/' + id);
+        await renderDailyNotes(selectedDate);
+        refreshCalendarBadges();
+      } catch (err) {
+        showNotification('Gagal menghapus catatan', 'error');
+      }
+    };
+
+    // simpan catatan baru
+    async function saveNote() {
+      const noteText = document.getElementById("newNoteInput").value.trim();
+      if (!noteText) return;
+
+      try {
+        await api.post('/api/daily-notes', { date: selectedDate, text: noteText });
+        await renderDailyNotes(selectedDate);
+        refreshCalendarBadges();
+      } catch (err) {
+        showNotification('Gagal menyimpan catatan', 'error');
+      }
+
+      document.getElementById("newNoteInput").value = "";
+    }
+
+    function closeNotesModal() {
+      notesModal.classList.remove("active");
+    }
+
+    // 🔹 supaya bisa dipanggil dari HTML
+    window.saveNote = saveNote;
+    window.closeNotesModal = closeNotesModal;
+
+    // Navigasi bulan
+    document.getElementById("prevMonth").addEventListener("click", () => {
+      if (currentMonth === 0) {
+        loadCalendar(currentYear - 1, 11);
+      } else {
+        loadCalendar(currentYear, currentMonth - 1);
+      }
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+      if (currentMonth === 11) {
+        loadCalendar(currentYear + 1, 0);
+      } else {
+        loadCalendar(currentYear, currentMonth + 1);
+      }
+    });
+
+    // jalankan pertama kali
+    loadCalendar();
+
+
+    // 🔐 Login: password dicek di server (backend/src/auth.js), tidak lagi disimpan di HTML
+
+    // Elemen modal login/daftar
+    const passwordModal = document.getElementById("passwordModal");
+    const authUsername = document.getElementById("authUsername");
+    const authPassword = document.getElementById("authPassword");
+    const submitAuth = document.getElementById("submitAuth");
+    const authError = document.getElementById("authError");
+    const authTitle = document.getElementById("authTitle");
+    const authToggleText = document.getElementById("authToggleText");
+    const authToggleLink = document.getElementById("authToggleLink");
+    let authMode = "login"; // 'login' | 'register'
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      authError.style.display = "none";
+      if (mode === "register") {
+        authTitle.textContent = "📝 Daftar Akun Baru";
+        submitAuth.textContent = "✅ Daftar";
+        authToggleText.textContent = "Sudah punya akun?";
+        authToggleLink.textContent = "Masuk di sini";
+      } else {
+        authTitle.textContent = "🔑 Masuk ke Keluh Kesah";
+        submitAuth.textContent = "🚀 Masuk";
+        authToggleText.textContent = "Belum punya akun?";
+        authToggleLink.textContent = "Daftar di sini";
+      }
+    }
+    authToggleLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      setAuthMode(authMode === "login" ? "register" : "login");
+    });
+
+    // 🚀 Cek apakah user sudah pernah login
+    if (localStorage.getItem(TOKEN_KEY)) {
+      passwordModal.classList.remove("active");
+    } else {
+      passwordModal.classList.add("active");
+    }
+
+    // Saat klik tombol masuk/daftar
+    submitAuth.addEventListener("click", async () => {
+      const username = authUsername.value.trim();
+      const password = authPassword.value;
+      if (!username || !password) {
+        authError.textContent = "❌ Username & password wajib diisi";
+        authError.style.display = "block";
+        return;
+      }
+      try {
+        const endpoint = authMode === "register" ? '/api/auth/register' : '/api/auth/login';
+        const { token } = await api.post(endpoint, { username, password });
+        localStorage.setItem(TOKEN_KEY, token);
+        passwordModal.classList.remove("active");
+        location.reload(); // muat ulang supaya semua data diambil dengan token baru
+      } catch (e) {
+        authError.textContent = "❌ " + (e.message || "Gagal, coba lagi");
+        authError.style.display = "block";
+        authPassword.value = "";
+      }
+    });
+
+    // Enter key juga bisa submit
+    authPassword.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") submitAuth.click();
+    });
+
+    // Setelah login, ambil identitas asli dari server (menggantikan userId acak lama)
+    async function loadCurrentUser() {
+      if (!localStorage.getItem(TOKEN_KEY)) return;
+      try {
+        const me = await api.get('/api/auth/me');
+        userId = me.id;
+        currentUsername = me.username;
+      } catch (e) {
+        // token invalid/kadaluarsa -> apiFetch sudah otomatis menampilkan modal login
+      }
+    }
+    // Dipanggil dari blok "Initialize" di atas (bersamaan dengan loadNotes), tidak perlu dipanggil lagi di sini.
+
+
+    // ===== Catatan Pribadi (Firestore, no-login) =====
+    // Catatan pribadi disimpan di PostgreSQL lewat /api/private-notes
+
+    const pn_title = document.getElementById("pn-title");
+    const pn_content = document.getElementById("pn-content");
+    const pn_tags = document.getElementById("pn-tags");
+    const pn_pin = document.getElementById("pn-pin");
+    const pn_container = document.getElementById("pn-container");
+    const pn_empty = document.getElementById("pn-empty");
+    const pn_search = document.getElementById("pn-search");
+    const pn_saveBtn = document.getElementById("pn-save-btn");
+    const pn_cancelBtn = document.getElementById("pn-cancel-edit");
+    const pn_exportBtn = document.getElementById("pn-export-btn");
+    const pn_importInput = document.getElementById("pn-import-input");
+
+    let pn_notes = [];
+    let pn_editingId = null;
+
+    // Load notes (pin di-sort di client)
+    async function pnLoadNotes() {
+      try {
+        pn_notes = (await api.get('/api/private-notes')).map(reviveTimestamps);
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+
+      // sort pinned dulu
+      pn_notes.sort((a, b) => {
+        const pinDiff = (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+        if (pinDiff) return pinDiff;
+        const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+
+      pnRenderNotes(pn_notes);
+    }
+
+    // Render
+    function pnRenderNotes(list) {
+      pn_container.innerHTML = "";
+      if (!list.length) {
+        pn_empty.style.display = "block";
+        return;
+      }
+      pn_empty.style.display = "none";
+
+      list.forEach(note => {
+        const card = document.createElement("div");
+        card.style.cssText = `
+      background:#151a21;border:1px solid #2d3748;color:#fff;border-radius:12px;
+      padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 10px rgba(0,0,0,.3)
+    `;
+
+        card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0;font-size:16px;font-weight:700">${note.title || "(Tanpa Judul)"}</h3>
+        <span style="font-size:12px;color:${note.pinned ? "#7cf5d2" : "#aaa"}">${note.pinned ? "📌 Pinned" : ""}</span>
+      </div>
+      <p style="margin:0;color:#ccc;font-size:14px;white-space:pre-wrap">${note.content || ""}</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${(note.tags || []).map(t => `<span style="background:#1e2329;color:#4da3ff;padding:2px 8px;border-radius:6px;font-size:12px">#${t}</span>`).join("")}
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px">
+        <button data-id="${note.id}" class="pn-edit"   style="background:#4da3ff;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">Edit</button>
+        <button data-id="${note.id}" class="pn-pin"    style="background:#10b981;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">${note.pinned ? "Unpin" : "Pin"}</button>
+        <button data-id="${note.id}" class="pn-delete" style="background:#e11d48;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">Hapus</button>
+      </div>
+    `;
+        pn_container.appendChild(card);
+      });
+    }
+
+    // Save / Update
+    pn_saveBtn.addEventListener("click", async () => {
+      const title = pn_title.value.trim();
+      const content = pn_content.value.trim();
+      const tags = pn_tags.value.split(",").map(t => t.trim()).filter(Boolean);
+      const pinned = pn_pin.checked;
+
+      if (!content) {
+        showNotification ? showNotification("Isi catatan tidak boleh kosong!", "error") : alert("Isi kosong");
+        return;
+      }
+
+      try {
+        if (pn_editingId) {
+          await api.put('/api/private-notes/' + pn_editingId, { title, content, tags, pinned });
+          pn_editingId = null;
+          pn_cancelBtn.style.display = "none";
+          pn_saveBtn.textContent = "Simpan";
+          showNotification && showNotification("Catatan diperbarui ✔️");
+        } else {
+          await api.post('/api/private-notes', { title, content, tags, pinned });
+          showNotification && showNotification("Catatan disimpan ✔️");
+        }
+        pn_title.value = "";
+        pn_content.value = "";
+        pn_tags.value = "";
+        pn_pin.checked = false;
+
+        await pnLoadNotes();
+      } catch (e) {
+        console.error(e);
+        showNotification ? showNotification("Gagal menyimpan catatan", "error") : alert("Gagal menyimpan");
+      }
+    });
+
+    // Cancel edit
+    pn_cancelBtn.addEventListener("click", () => {
+      pn_editingId = null;
+      pn_title.value = "";
+      pn_content.value = "";
+      pn_tags.value = "";
+      pn_pin.checked = false;
+      pn_cancelBtn.style.display = "none";
+      pn_saveBtn.textContent = "Simpan";
+    });
+
+    // Search
+    pn_search.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = pn_notes.filter(n =>
+        (n.title || "").toLowerCase().includes(q) ||
+        (n.content || "").toLowerCase().includes(q) ||
+        (n.tags || []).some(t => (t || "").toLowerCase().includes(q))
+      );
+      pnRenderNotes(filtered);
+    });
+
+    // Card actions (edit / pin / delete)
+    pn_container.addEventListener("click", async (e) => {
+      const id = e.target.dataset.id;
+      if (!id) return;
+
+      if (e.target.classList.contains("pn-delete")) {
+        if (confirm("Hapus catatan ini?")) {
+          await api.del('/api/private-notes/' + id);
+          showNotification && showNotification("Catatan dihapus 🗑️");
+          await pnLoadNotes();
+        }
+      } else if (e.target.classList.contains("pn-pin")) {
+        const note = pn_notes.find(n => n.id === id);
+        await api.put('/api/private-notes/' + id, { pinned: !note?.pinned });
+        await pnLoadNotes();
+      } else if (e.target.classList.contains("pn-edit")) {
+        const note = pn_notes.find(n => n.id === id);
+        if (!note) return;
+        pn_editingId = id;
+        pn_title.value = note.title || "";
+        pn_content.value = note.content || "";
+        pn_tags.value = (note.tags || []).join(", ");
+        pn_pin.checked = !!note.pinned;
+        pn_cancelBtn.style.display = "inline-block";
+        pn_saveBtn.textContent = "Update";
+        // pindah ke composer (opsional)
+        window.scrollTo({ top: document.getElementById("pn-page").offsetTop, behavior: "smooth" });
+      }
+    });
+
+    // Export / Import
+    pn_exportBtn.addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(pn_notes, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "catatan-pribadi.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    pn_importInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        for (const n of data) {
+          await api.post('/api/private-notes', {
+            title: n.title || "", content: n.content || "", tags: n.tags || [], pinned: !!n.pinned
+          });
+        }
+        showNotification && showNotification("Import selesai ✔️");
+        await pnLoadNotes();
+      } catch (err) {
+        console.error(err);
+        showNotification ? showNotification("Gagal import", "error") : alert("Gagal import");
+      } finally {
+        e.target.value = "";
+      }
+    });
+
+    // load awal
+    pnLoadNotes();
+
+
+    // === NIGHTCORE CONVERTER FINAL ===
+
+    // Tampilkan nama file setelah dipilih
+    document.getElementById("audioInput").addEventListener("change", function () {
+      const file = this.files[0];
+      document.getElementById("fileName").textContent = file ? `🎵 ${file.name}` : "";
+    });
+
+    // Proses convert
+    document.getElementById("nightcoreForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const file = document.getElementById("audioInput").files[0];
+      if (!file) return;
+
+      // Tampilkan loading
+      const submitBtn = document.getElementById("convertBtn");
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = "Sabar ya...";
+      submitBtn.disabled = true;
+
+      try {
+        // decode audio
+        const arrayBuffer = await file.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+        const speedMultiplier = 1.18;
+
+        // Offline context untuk render dengan sample rate lebih tinggi untuk kualitas
+        const offlineCtx = new OfflineAudioContext(
+          audioBuffer.numberOfChannels,
+          Math.ceil(audioBuffer.length / speedMultiplier),
+          Math.max(audioBuffer.sampleRate, 44100) // Minimal 44.1kHz
+        );
+
+        const source = offlineCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.playbackRate.value = speedMultiplier;
+
+        // --- RANGKAIAN EFEK YANG DIPERHALUS DAN DIPERBAIKI ---
+
+         // 1. Pre-processing: Noise Gate (Sedikit disesuaikan agar lebih natural)
+        const noiseGate = offlineCtx.createDynamicsCompressor();
+        noiseGate.threshold.value = -48; 
+        noiseGate.knee.value = 10;
+        noiseGate.ratio.value = 15;
+        noiseGate.attack.value = 0.002;
+        noiseGate.release.value = 0.1;
+
+        // 2. High-pass filter (Tidak diubah, sudah bagus)
+        const highpass = offlineCtx.createBiquadFilter();
+        highpass.type = "highpass";
+        highpass.frequency.value = 100;
+        highpass.Q.value = 0.5;
+
+        // 3. Low-pass filter (Frekuensi sedikit diturunkan untuk membuang harshness)
+        const antiAlias = offlineCtx.createBiquadFilter();
+        antiAlias.type = "lowpass";
+        antiAlias.frequency.value = 15000; // Memotong frekuensi tinggi yang tidak perlu
+        antiAlias.Q.value = 0.7;
+
+        // 4. Peaking filter untuk vokal anime (Frekuensi digeser ke 'sweet spot')
+        const vocalBoost = offlineCtx.createBiquadFilter();
+        vocalBoost.type = "peaking";
+        vocalBoost.frequency.value = 2800; // Frekuensi kunci untuk vokal imut & jelas
+        vocalBoost.Q.value = 1.0;
+        vocalBoost.gain.value = 3.0; // Gain sedikit diturunkan untuk mencegah pecah
+
+        // 5. Presence boost (Digeser lebih tinggi untuk kejernihan, bukan ketajaman)
+        const presence = offlineCtx.createBiquadFilter();
+        presence.type = "peaking";
+        presence.frequency.value = 4500; // Menambah kejelasan 'forward'
+        presence.Q.value = 1.2; 
+        presence.gain.value = 1.5; // Gain diturunkan secara signifikan
+
+        // 6. Air band (Sedikit lebih efektif untuk 'napas')
+        const airBand = offlineCtx.createBiquadFilter();
+        airBand.type = "highshelf";
+        airBand.frequency.value = 9000;
+        airBand.gain.value = 1.5; // Sedikit lebih terasa
+
+        // 7. De-esser (Dibuat lebih fokus pada frekuensi 'sss' yang tajam)
+        const deEsser1 = offlineCtx.createBiquadFilter();
+        deEsser1.type = "peaking";
+        deEsser1.frequency.value = 7000; // Target utama sibilance
+        deEsser1.Q.value = 3.0; // Q lebih sempit agar fokus
+        deEsser1.gain.value = -5; // Reduksi lebih dalam
+
+        const deEsser2 = offlineCtx.createBiquadFilter();
+        deEsser2.type = "peaking";
+        deEsser2.frequency.value = 9500; // Target sibilance sekunder
+        deEsser2.Q.value = 4;
+        deEsser2.gain.value = -4;
+
+        // 8. Low frequency compressor (Tidak diubah)
+        const lowCompressor = offlineCtx.createDynamicsCompressor();
+        lowCompressor.threshold.value = -25;
+        lowCompressor.knee.value = 20;
+        lowCompressor.ratio.value = 3;
+        lowCompressor.attack.value = 0.01;
+        lowCompressor.release.value = 0.3;
+
+        // 9. Saturasi (Dibuat jauh lebih halus)
+        const waveshaper = offlineCtx.createWaveShaper();
+        waveshaper.curve = makeAdvancedDistortionCurve(1.0); // Sangat-sangat ringan
+        waveshaper.oversample = '4x';
+
+        // 10. Main compressor (Dibuat bekerja lebih awal untuk mencegah 'kresek')
+        const mainCompressor = offlineCtx.createDynamicsCompressor();
+        mainCompressor.threshold.value = -22; // Bekerja lebih cepat di volume rendah
+        mainCompressor.knee.value = 30; // Transisi lebih halus
+        mainCompressor.ratio.value = 4;
+        mainCompressor.attack.value = 0.003;
+        mainCompressor.release.value = 0.25; // Release lebih smooth
+
+        // 11. Final limiter (Dibuat lebih 'lembut')
+        const finalLimiter = offlineCtx.createDynamicsCompressor();
+        finalLimiter.threshold.value = -0.5;
+        finalLimiter.knee.value = 0;
+        finalLimiter.ratio.value = 20;
+        finalLimiter.attack.value = 0.002; // Attack sedikit lebih lambat, lebih aman
+        finalLimiter.release.value = 0.1; // Release lebih cepat
+
+        // 12. Output gain control (Tidak diubah)
+        const outputGain = offlineCtx.createGain();
+        outputGain.gain.value = 0.95;
+
+        // Rangkai semua efek (Struktur 100% sama seperti kode Anda)
+        source.connect(noiseGate);
+        noiseGate.connect(highpass);
+        highpass.connect(antiAlias);
+        antiAlias.connect(vocalBoost);
+        vocalBoost.connect(presence);
+        presence.connect(airBand);
+        airBand.connect(deEsser1);
+        deEsser1.connect(deEsser2);
+        deEsser2.connect(lowCompressor);
+        lowCompressor.connect(waveshaper);
+        waveshaper.connect(mainCompressor);
+        mainCompressor.connect(finalLimiter);
+        finalLimiter.connect(outputGain);
+        outputGain.connect(offlineCtx.destination);
+
+        source.start();
+        const renderedBuffer = await offlineCtx.startRendering();
+
+        // Post-processing: Dither untuk mengurangi quantization noise
+        const ditheredBuffer = applyDither(renderedBuffer);
+
+        const blob = encodeMp3(ditheredBuffer);
+
+        const url = URL.createObjectURL(blob);
+        const originalName = file.name.split('.')[0];
+        const downloadLink = document.getElementById("downloadNightcore");
+        downloadLink.href = url;
+        downloadLink.download = `${originalName}_nightcore.mp3`;
+
+        document.getElementById("nightcorePlayer").src = url;
+        document.getElementById("nightcoreResult").style.display = "block";
+
+      } catch (error) {
+        console.error("Error converting audio:", error);
+        alert("Terjadi error saat convert audio. Pastikan file audio valid.");
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Function untuk membuat kurva distorsi yang lebih advanced dan halus
+    function makeAdvancedDistortionCurve(amount) {
+      const samples = 44100;
+      const curve = new Float32Array(samples);
+      for (let i = 0; i < samples; i++) {
+        const x = (i * 2) / samples - 1;
+        // Soft clipping dengan fungsi tanh untuk warmth yang natural
+        curve[i] = Math.tanh(amount * x) / Math.tanh(amount);
+      }
+      return curve;
+    }
+
+    // Function untuk menerapkan dither dan mengurangi noise
+    function applyDither(audioBuffer) {
+      const numChannels = audioBuffer.numberOfChannels;
+      const length = audioBuffer.length;
+      const sampleRate = audioBuffer.sampleRate;
+
+      // Create new buffer untuk hasil
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const newBuffer = ctx.createBuffer(numChannels, length, sampleRate);
+
+      for (let channel = 0; channel < numChannels; channel++) {
+        const inputData = audioBuffer.getChannelData(channel);
+        const outputData = newBuffer.getChannelData(channel);
+
+        for (let i = 0; i < length; i++) {
+          // Triangular dither untuk mengurangi quantization noise
+          const dither = (Math.random() + Math.random() - 1) * 0.0000152587890625; // 1/65536
+          outputData[i] = inputData[i] + dither;
+
+          // Soft clipping untuk mencegah overflow
+          outputData[i] = Math.tanh(outputData[i] * 0.98) / Math.tanh(0.98);
+        }
+      }
+
+      return newBuffer;
+    }
+
+    // Enhanced MP3 encoding dengan kualitas tinggi
+    function encodeMp3(renderedBuffer) {
+      const numChannels = renderedBuffer.numberOfChannels;
+      const sampleRate = renderedBuffer.sampleRate;
+
+      // Gunakan bitrate yang lebih tinggi untuk kualitas yang lebih baik
+      const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, 320);
+      const mp3Data = [];
+
+      const samplesLeft = floatTo16BitPCMEnhanced(renderedBuffer.getChannelData(0));
+      const samplesRight = numChannels > 1 ? floatTo16BitPCMEnhanced(renderedBuffer.getChannelData(1)) : null;
+
+      const blockSize = 1152;
+      for (let i = 0; i < samplesLeft.length; i += blockSize) {
+        const leftChunk = samplesLeft.subarray(i, i + blockSize);
+        let mp3buf;
+        if (samplesRight) {
+          const rightChunk = samplesRight.subarray(i, i + blockSize);
+          mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+        } else {
+          mp3buf = mp3encoder.encodeBuffer(leftChunk);
+        }
+        if (mp3buf.length > 0) mp3Data.push(mp3buf);
+      }
+
+      const end = mp3encoder.flush();
+      if (end.length > 0) mp3Data.push(end);
+
+      return new Blob(mp3Data, { type: "audio/mp3" });
+    }
+
+    // Enhanced konversi Float32 → Int16 dengan better dynamic range
+    function floatTo16BitPCMEnhanced(float32Array) {
+      const buffer = new Int16Array(float32Array.length);
+      for (let i = 0; i < float32Array.length; i++) {
+        // Soft limiting untuk mencegah harsh clipping
+        let s = float32Array[i];
+        s = Math.tanh(s * 0.9) / Math.tanh(0.9); // Soft limit
+        s = Math.max(-0.98, Math.min(0.98, s)); // Hard limit dengan headroom
+        buffer[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      }
+      return buffer;
+    }
+
+  </script>
+
+
+  <style>
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 20px 50px rgba(78, 205, 196, 0.3);
+      }
+    }
+  </style>
+</body>
+
+</html>
