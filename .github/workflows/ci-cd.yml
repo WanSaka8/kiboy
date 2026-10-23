@@ -114,7 +114,7 @@ jobs:
       cancel-in-progress: false
     defaults:
       run:
-        shell: '"C:\Program Files\Git\bin\bash.exe" --noprofile --norc -eo pipefail {0}'
+        shell: bash
     steps:
       - name: Ambil source code
         uses: actions/checkout@v4
