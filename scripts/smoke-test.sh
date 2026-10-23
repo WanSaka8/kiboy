@@ -18,16 +18,16 @@ echo "Smoke test ke $BASE_URL"
 health=""
 for i in $(seq 1 "$MAX_TRY"); do
   health=$(curl -s "$BASE_URL/api/health" || true)
-  if echo "$health" | grep -q '"db":"up"'; then break; fi
+  if grep -q '"db":"up"' <<< "$health"; then break; fi
   echo "  menunggu API siap ($i/$MAX_TRY)..."
   sleep 2
 done
-echo "$health" | grep -q '"db":"up"' || fail "GET /api/health tidak menjawab db:up (respons: ${health:-kosong})"
+grep -q '"db":"up"' <<< "$health" || fail "GET /api/health tidak menjawab db:up (respons: ${health:-kosong})"
 ok "GET /api/health -> $health"
 
 # 2. Frontend (Nginx) menyajikan index.html
 page=$(curl -s "$BASE_URL/")
-echo "$page" | grep -q "Keluh Kesah" || fail "Halaman utama tidak memuat teks 'Keluh Kesah'"
+grep -q "Keluh Kesah" <<< "$page" || fail "Halaman utama tidak memuat teks 'Keluh Kesah'"
 ok "GET / -> index.html tersaji"
 
 # 3. Endpoint terlindungi menolak request tanpa token
@@ -39,13 +39,13 @@ ok "GET /api/notes tanpa token -> 401"
 resp=$(curl -s -X POST -H 'Content-Type: application/json' \
   -d "{\"username\":\"$DEMO_USER\",\"password\":\"$DEMO_PASS\"}" \
   "$BASE_URL/api/auth/login")
-token=$(echo "$resp" | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+token=$(sed -n 's/.*"token":"\([^"]*\)".*/\1/p' <<< "$resp")
 [ -n "$token" ] || fail "POST /api/auth/login gagal (respons: $resp)"
 ok "POST /api/auth/login -> token diterima"
 
 # 5. Identitas dari token benar
 me=$(curl -s -H "Authorization: Bearer $token" "$BASE_URL/api/auth/me")
-echo "$me" | grep -q "\"username\":\"$DEMO_USER\"" || fail "GET /api/auth/me salah (respons: $me)"
+grep -q "\"username\":\"$DEMO_USER\"" <<< "$me" || fail "GET /api/auth/me salah (respons: $me)"
 ok "GET /api/auth/me -> $me"
 
 # 6. Data cerita terbaca dari MySQL
