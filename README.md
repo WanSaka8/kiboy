@@ -210,7 +210,7 @@ bash scripts/smoke-test.sh http://localhost:8080
 - Kode backend: https://github.com/WanSaka8/kiboy/tree/main/backend
 - Docker Hub: https://hub.docker.com/r/narasandrone/izinkompe/tags (tag `frontend` dan `backend`)
 - GitHub Actions: https://github.com/WanSaka8/kiboy/actions
-- Video dokumentasi: https://mikroskilacid-my.sharepoint.com/:v:/g/personal/wan_saka_students_mikroskil_ac_id/IQD89VH4xuYYQ5j6B4Fdv9LFASeXLF-ovtg-w4McMq-REdA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=EXR309
+- Video dokumentasi: https://mikroskilacid-my.sharepoint.com/:f:/g/personal/percaya_mendrofa_students_mikroskil_ac_id/IgBSBhEEbdLuS5BXbFvNcxkBAekyJCHQTFMa8104NLlusBY?e=I0uac2
 
 ## Opsional: push image ke Docker Hub
 
