@@ -114,27 +114,29 @@ jobs:
       cancel-in-progress: false
     defaults:
       run:
-        shell: bash
+        shell: cmd
     steps:
       - name: Ambil source code
         uses: actions/checkout@v4
 
       - name: Tulis .env dari GitHub Secrets
+        shell: powershell
         env:
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          {
-            echo "MYSQL_DATABASE=keluhkesah"
-            echo "MYSQL_USER=keluh"
-            echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
-            echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-            echo "JWT_SECRET=${JWT_SECRET}"
-            echo "WEB_PORT=8080"
-            echo "ADMINER_PORT=8081"
-            echo "DOCKERHUB_USER=${DOCKERHUB_USER}"
-          } > .env
+          $isi = @(
+            "MYSQL_DATABASE=keluhkesah",
+            "MYSQL_USER=keluh",
+            "MYSQL_PASSWORD=$env:MYSQL_PASSWORD",
+            "MYSQL_ROOT_PASSWORD=$env:MYSQL_ROOT_PASSWORD",
+            "JWT_SECRET=$env:JWT_SECRET",
+            "WEB_PORT=8080",
+            "ADMINER_PORT=8081",
+            "DOCKERHUB_USER=$env:DOCKERHUB_USER"
+          )
+          [System.IO.File]::WriteAllLines("$PWD\.env", $isi)
 
       - name: Tarik image terbaru dari Docker Hub
         run: docker compose pull
@@ -146,7 +148,7 @@ jobs:
         run: docker compose ps
 
       - name: Smoke test aplikasi di laptop
-        run: bash scripts/smoke-test.sh http://localhost:8080
+        run: '"%ProgramFiles%\Git\bin\bash.exe" scripts/smoke-test.sh http://localhost:8080'
 
       - name: Tampilkan log container jika gagal
         if: failure()
